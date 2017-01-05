@@ -19,27 +19,7 @@
         android:padding="8dp"
         tools:text="highway" />
 
-    <TextView
-        android:id="@+id/f2015_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        tools:text="f2015" />
 
-    <TextView
-        android:id="@+id/f2016_text_view"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        tools:text="f2016" />
-
-    <TextView
-        android:id="@+id/cause_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        tools:text="cause" />
 
     <TextView
         android:id="@+id/gmap_text_view"
