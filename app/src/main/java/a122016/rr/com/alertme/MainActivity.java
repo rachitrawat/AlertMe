@@ -37,6 +37,8 @@ import com.google.android.gms.location.places.Places;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Button mapButton;
     private TextView progressBarText;
     private ProgressBar progessBar;
+    private Location mLastLocation;
     /**
      * Constant value for the places loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -114,19 +117,12 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
         }
 
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
-            Toast.makeText(this, "" + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "" + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
         }
 
-        //Play alert sound
-        try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Override
@@ -195,7 +191,30 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         for (Place temp : data) {
             Log.e(LOG_TAG, (temp.getPlaceOfAccident() + " " + temp.getFatalties2015() + " " + temp.getFatalties2016() + " " + temp.getCauseOfAccident()));
 
+            float[] result = new float[1];
+            if (temp.getLatitude() != 0) {
+                Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
+                        temp.getLatitude(), temp.getLongitude(), result);
+                Log.e(LOG_TAG, String.valueOf(result[0]));
+
+
+                if (result[0] <= 1000) {
+
+                    Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
+
+                    //Play alert sound
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        r.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
         }
+
         arrayList = data;
         listButton.setVisibility(View.VISIBLE);
         mapButton.setVisibility(View.VISIBLE);
