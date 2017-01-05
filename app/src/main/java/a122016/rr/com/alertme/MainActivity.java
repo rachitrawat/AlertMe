@@ -1,6 +1,7 @@
 package a122016.rr.com.alertme;
 
 
+import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -177,9 +181,11 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
         for (Place temp : data) {
             Log.e(LOG_TAG, (temp.getPlaceOfAccident() + " " + temp.getFatalties2015() + " " + temp.getFatalties2016() + " " + temp.getCauseOfAccident()));
+
         }
-
-
+        // PlaceAdapter adapter = new PlaceAdapter(this, data);
+        // ListView listView = (ListView) findViewById(R.id.list);
+        // listView.setAdapter(adapter);
     }
 
     @Override
