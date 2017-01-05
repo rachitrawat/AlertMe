@@ -39,7 +39,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
-    private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/4daffc447b235802d87bb7f7b782efeade65b4a1/app/src/debug/res/data.json";
+    private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
     public static ArrayList<Place> arrayList;
     private static final String LOG_TAG = MainActivity.class.getName();
     private Button listButton;
