@@ -11,40 +11,53 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="a122016.rr.com.alertme.MainActivity">
 
+    <TextView
+        android:id="@+id/alert_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        tools:hint="Alert" />
+
+    <ImageView
+        android:id="@+id/alert_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/alert_text_view"
+        android:src="@drawable/alert_icon" />
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
+        android:layout_centerInParent="true" />
 
     <TextView
         android:id="@+id/progress_bar_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fetching data from server..."
         android:layout_below="@id/progress_bar"
-        android:textStyle="bold"
         android:layout_centerInParent="true"
-        />
+        android:text="Fetching data from server..."
+        android:textStyle="bold" />
 
     <Button
+        android:id="@+id/list_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="List"
-        android:onClick="openList"
-        android:id="@+id/list_button"
         android:layout_alignParentBottom="true"
-        />
+        android:onClick="openList"
+        android:text="List" />
 
     <Button
         android:id="@+id/map_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="execute_it"
-        android:text="Map"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        />
+        android:onClick="execute_it"
+        android:text="Map" />
 
 </RelativeLayout>

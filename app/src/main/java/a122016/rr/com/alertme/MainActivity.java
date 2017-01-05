@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private TextView progressBarText;
     private ProgressBar progessBar;
     private Location mLastLocation;
+    private TextView alertText;
+    private ImageView alertImage;
     /**
      * Constant value for the places loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -66,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         mapButton.setVisibility(View.INVISIBLE);
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
+        alertText = (TextView) findViewById(R.id.alert_text_view);
+        alertText.setVisibility(View.INVISIBLE);
+        alertImage=(ImageView) findViewById(R.id.alert_image);
+        alertImage.setVisibility(View.INVISIBLE);
+
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -198,10 +206,12 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 Log.e(LOG_TAG, String.valueOf(result[0]));
 
 
-                if (result[0] <= 1000) {
+                if (result[0] <= 5000) {
 
-                    Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
-
+                 //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
+                    alertText.setText("Alert! Accident Prone Area: " + temp.getPlaceOfAccident());
+                    alertText.setVisibility(View.VISIBLE);
+                    alertImage.setVisibility(View.VISIBLE);
                     //Play alert sound
                     try {
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
