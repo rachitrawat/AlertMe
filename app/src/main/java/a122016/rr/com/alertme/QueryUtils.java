@@ -198,8 +198,11 @@ public final class QueryUtils {
                 // Extract the value for the key called "CAUSE OF ACCIDENT"
                 String causeOfAccident = currentPlace.getString("CAUSE OF ACCIDENT");
 
+                double latitude = currentPlace.getDouble("LATITUDE");
+                double longitude = currentPlace.getDouble("LONGITUDE");
+
                 // Create a new {@link place} object
-                Place place = new Place(location, highwayNumber, fatalities2015, fatalities2016, causeOfAccident, 0, 0);
+                Place place = new Place(location, highwayNumber, fatalities2015, fatalities2016, causeOfAccident, latitude, longitude);
 
                 // Add the new {@link place} to the list of places.
                 placesList.add(place);

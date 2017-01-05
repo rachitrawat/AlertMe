@@ -67,6 +67,11 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
         // the default TextView.
         causeTextView.setText(currentPlace.getCauseOfAccident());
 
+        TextView gmapTextView = (TextView) listItemView.findViewById(R.id.gmap_text_view);
+        // Get the default translation from the currentPlace object and set this text on
+        // the default TextView.
+        causeTextView.setText(currentPlace.getLatitude()+ "/" + currentPlace.getLongitude());
+
         // Return the whole list item layout (containing 2 TextViews) so that it can be shown in
         // the ListView.
         return listItemView;
