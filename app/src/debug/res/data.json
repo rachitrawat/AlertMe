@@ -1,1 +1,177 @@
-[{"PLACE OF ACCIDENT":"Lassoli","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":13,"FATALITIES IN 2016":7,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Bhigan Chowk","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":19,"FATALITIES IN 2016":10,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Hasanpur Chowk","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":9,"FATALITIES IN 2016":6,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Kurar","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":23,"FATALITIES IN 2016":16,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Nangal Chowk","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":30,"FATALITIES IN 2016":19,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Kumaspur Chowk","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":27,"FATALITIES IN 2016":19,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Murthal Chowk","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":8,"FATALITIES IN 2016":5,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"GT Road Bari","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":19,"FATALITIES IN 2016":12,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Ahulana Nahar Pul","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":3,"FATALITIES IN 2016":2,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Kali Mata Mandir","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":15,"FATALITIES IN 2016":10,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Apolo School","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":5,"FATALITIES IN 2016":7,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Murthal Road","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":10,"FATALITIES IN 2016":8,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Rohat Nahar Pul","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":2,"FATALITIES IN 2016":1,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Kawali Mod","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":8,"FATALITIES IN 2016":6,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Harsana Mod","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":11,"FATALITIES IN 2016":7,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Kami","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":6,"FATALITIES IN 2016":6,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Jahri By Pass","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":5,"FATALITIES IN 2016":4,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Sec-3 Mod SPT","NH/SH/MDR/OTHER":"","FATALITIES IN 2015":6,"FATALITIES IN 2016":4,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Aggarsen Chowk","NH/SH/MDR/OTHER":"","FATALITIES IN 2015":7,"FATALITIES IN 2016":6,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"RT Cut","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":6,"FATALITIES IN 2016":4,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Piou Maniyari kundli","NH/SH/MDR/OTHER":"NH-1","FATALITIES IN 2015":14,"FATALITIES IN 2016":9,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Near Rohna Shiv Mandir","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":3,"FATALITIES IN 2016":1,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Near Jhorath Nahar","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":5,"FATALITIES IN 2016":4,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Thana Kalan Road By Pass KKD","NH/SH/MDR/OTHER":"SH","FATALITIES IN 2015":9,"FATALITIES IN 2016":6,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"},{"PLACE OF ACCIDENT":"Narayan Aasram Sisana","NH/SH/MDR/OTHER":"","FATALITIES IN 2015":2,"FATALITIES IN 2016":3,"CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"}]
+[
+  {
+    "PLACE OF ACCIDENT":"Lassoli",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":13,
+    "FATALITIES IN 2016":7,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Bhigan Chowk",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":19,
+    "FATALITIES IN 2016":10,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Hasanpur Chowk",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":9,
+    "FATALITIES IN 2016":6,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Kurar",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":23,
+    "FATALITIES IN 2016":16,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Nangal Chowk",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":30,
+    "FATALITIES IN 2016":19,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Kumaspur Chowk",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":27,
+    "FATALITIES IN 2016":19,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Murthal Chowk",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":8,
+    "FATALITIES IN 2016":5,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"GT Road Bari",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":19,
+    "FATALITIES IN 2016":12,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Ahulana Nahar Pul",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":3,
+    "FATALITIES IN 2016":2,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Kali Mata Mandir",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":15,
+    "FATALITIES IN 2016":10,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Apolo School",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":5,
+    "FATALITIES IN 2016":7,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Murthal Road",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":10,
+    "FATALITIES IN 2016":8,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Rohat Nahar Pul",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":2,
+    "FATALITIES IN 2016":1,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Kawali Mod",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":8,
+    "FATALITIES IN 2016":6,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Harsana Mod",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":11,
+    "FATALITIES IN 2016":7,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Kami",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":6,
+    "FATALITIES IN 2016":6,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Jahri By Pass",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":5,
+    "FATALITIES IN 2016":4,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Sec-3 Mod SPT",
+    "NH/SH/MDR/OTHER":"",
+    "FATALITIES IN 2015":6,
+    "FATALITIES IN 2016":4,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Aggarsen Chowk",
+    "NH/SH/MDR/OTHER":"",
+    "FATALITIES IN 2015":7,
+    "FATALITIES IN 2016":6,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"RT Cut",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":6,
+    "FATALITIES IN 2016":4,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Piou Maniyari kundli",
+    "NH/SH/MDR/OTHER":"NH-1",
+    "FATALITIES IN 2015":14,
+    "FATALITIES IN 2016":9,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Near Rohna Shiv Mandir",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":3,
+    "FATALITIES IN 2016":1,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Near Jhorath Nahar",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":5,
+    "FATALITIES IN 2016":4,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Thana Kalan Road By Pass KKD",
+    "NH/SH/MDR/OTHER":"SH",
+    "FATALITIES IN 2015":9,
+    "FATALITIES IN 2016":6,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  },
+  {
+    "PLACE OF ACCIDENT":"Narayan Aasram Sisana",
+    "NH/SH/MDR/OTHER":"",
+    "FATALITIES IN 2015":2,
+    "FATALITIES IN 2016":3,
+    "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding"
+  }
+]
