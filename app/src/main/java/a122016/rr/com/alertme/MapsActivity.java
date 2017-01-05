@@ -40,7 +40,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Ashoka University and move the camera
         LatLng sydney = new LatLng(28.9466114, 77.10177090000002);
+        LatLng sydney1 = new LatLng(15.9466114, 67.10177090000002);
+
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Ashoka University"));
+        mMap.addMarker(new MarkerOptions().position(sydney1).title("Marker in test"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
