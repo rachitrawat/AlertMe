@@ -22,7 +22,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,12 +35,17 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.places.Places;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/4daffc447b235802d87bb7f7b782efeade65b4a1/app/src/debug/res/data.json";
-
+    public static ArrayList<Place> arrayList;
     private static final String LOG_TAG = MainActivity.class.getName();
+    private Button listButton;
+    private Button mapButton;
+    private TextView progressBarText;
+    private ProgressBar progessBar;
     /**
      * Constant value for the places loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -49,7 +57,12 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        listButton = (Button) findViewById(R.id.list_button);
+        listButton.setVisibility(View.INVISIBLE);
+        mapButton = (Button) findViewById(R.id.map_button);
+        mapButton.setVisibility(View.INVISIBLE);
+        progessBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBarText = (TextView) findViewById(R.id.progress_bar_text);
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -183,13 +196,27 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             Log.e(LOG_TAG, (temp.getPlaceOfAccident() + " " + temp.getFatalties2015() + " " + temp.getFatalties2016() + " " + temp.getCauseOfAccident()));
 
         }
-        // PlaceAdapter adapter = new PlaceAdapter(this, data);
-        // ListView listView = (ListView) findViewById(R.id.list);
-        // listView.setAdapter(adapter);
+        arrayList = data;
+        listButton.setVisibility(View.VISIBLE);
+        mapButton.setVisibility(View.VISIBLE);
+        progessBar.setVisibility(View.GONE);
+        progressBarText.setVisibility(View.GONE);
+
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList<Place>> loader) {
 
+    }
+
+    public void openList(View view) {
+
+        Intent i = new Intent(this, a122016.rr.com.alertme.ListActivity.class);
+        startActivity(i);
+    }
+
+    public static ArrayList<Place> getArrayList() {
+
+        return arrayList;
     }
 }
