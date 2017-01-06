@@ -1,50 +1,50 @@
 package a122016.rr.com.alertme;
 
 
-import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
-    public static ArrayList<Place> arrayList;
     private static final String LOG_TAG = MainActivity.class.getName();
+    /**
+     * Constant value for the places loader ID. We can choose any integer.
+     * This really only comes into play if you're using multiple loaders.
+     */
+    private static final int PLACES_LOADER_ID = 1;
+    public static ArrayList<Place> arrayList;
     private Button listButton;
     private Button mapButton;
     private TextView progressBarText;
@@ -52,12 +52,15 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Location mLastLocation;
     private TextView alertText;
     private ImageView alertImage;
-    /**
-     * Constant value for the places loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
-     */
-    private static final int PLACES_LOADER_ID = 1;
+    private Timer timer;
     private GoogleApiClient mGoogleApiClient;
+    private ImageView safeImage;
+
+
+    public static ArrayList<Place> getArrayList() {
+
+        return arrayList;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +74,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
         alertText = (TextView) findViewById(R.id.alert_text_view);
         alertText.setVisibility(View.INVISIBLE);
-        alertImage=(ImageView) findViewById(R.id.alert_image);
+        alertImage = (ImageView) findViewById(R.id.alert_image);
         alertImage.setVisibility(View.INVISIBLE);
+        safeImage = (ImageView) findViewById(R.id.safe_image);
+        safeImage.setVisibility(View.INVISIBLE);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -94,17 +99,18 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         if (networkInfo != null && networkInfo.isConnected()) {
 
             // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
+            final LoaderManager loaderManager = getLoaderManager();
 
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
+
             loaderManager.initLoader(PLACES_LOADER_ID, null, this);
+
         } else {
             Toast.makeText(this, "Network Connection Required.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     public void execute_it(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
@@ -125,9 +131,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
         }
 
-         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
-           // Toast.makeText(this, "" + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "" + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
         }
 
 
@@ -188,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
     }
 
-
     @Override
     public Loader<ArrayList<Place>> onCreateLoader(int id, Bundle args) {
         return new PlacesLoader(this, PLACES_REQUEST_URL);
@@ -196,20 +201,38 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
+
+        final ArrayList<Place> DATA = data;
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        afterLoadFinished(DATA);
+                    }
+                });
+            }
+        }, 0, 30000);
+    }
+
+    public void afterLoadFinished(ArrayList<Place> data) {
+
         for (Place temp : data) {
-            Log.e(LOG_TAG, (temp.getPlaceOfAccident() + " " + temp.getFatalties2015() + " " + temp.getFatalties2016() + " " + temp.getCauseOfAccident()));
 
             float[] result = new float[1];
             if (temp.getLatitude() != 0) {
                 Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
                         temp.getLatitude(), temp.getLongitude(), result);
-                Log.e(LOG_TAG, String.valueOf(result[0]));
-
+                Log.i(LOG_TAG, "result: " + result[0]);
 
                 if (result[0] <= 5000) {
 
-                 //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
-                    alertText.setText("Alert! Accident Prone Area: " + temp.getPlaceOfAccident());
+                    //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
+                    alertText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
+                    alertText.setTextColor(Color.RED);
                     alertText.setVisibility(View.VISIBLE);
                     alertImage.setVisibility(View.VISIBLE);
                     //Play alert sound
@@ -221,16 +244,21 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         e.printStackTrace();
                     }
 
+                } else {
+                    alertText.setText("You are in a safe area.");
+                    alertText.setTextColor(Color.parseColor("#388E3C"));
+                    alertText.setVisibility(View.VISIBLE);
+                    safeImage.setVisibility(View.VISIBLE);
                 }
+
             }
         }
 
         arrayList = data;
-        listButton.setVisibility(View.VISIBLE);
+        // listButton.setVisibility(View.VISIBLE);
         mapButton.setVisibility(View.VISIBLE);
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
-
     }
 
     @Override
@@ -242,10 +270,5 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
         Intent i = new Intent(this, a122016.rr.com.alertme.ListActivity.class);
         startActivity(i);
-    }
-
-    public static ArrayList<Place> getArrayList() {
-
-        return arrayList;
     }
 }

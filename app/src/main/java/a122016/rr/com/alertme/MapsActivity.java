@@ -4,20 +4,26 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
 import static android.R.attr.data;
+import static android.os.Build.VERSION_CODES.N;
+import static com.google.android.gms.maps.CameraUpdateFactory.zoomIn;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private LatLngBounds sonipat = new LatLngBounds(
+            new LatLng(28.95, 76.90), new LatLng(29.0, 77.20));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +34,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
-
 
     /**
      * Manipulates the map once available.
@@ -49,9 +54,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (place.getLatitude() != 0) {
                 LatLng latLong = new LatLng(place.getLatitude(), place.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(latLong).title("Marker in " + place.getPlaceOfAccident()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLong));
             }
         }
+
+        // Set the camera to the greatest possible zoom level that includes the
+        // bounds
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(sonipat, 0));
 
     }
 }
