@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private ImageView helpImage;
     private Timer timer;
     private GoogleApiClient mGoogleApiClient;
+    private Uri notification;
+    private Ringtone r;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         helpText = (TextView) findViewById(R.id.alert_text_view);
         helpText.setVisibility(View.INVISIBLE);
         helpImage = (ImageView) findViewById(R.id.help_image);
+        notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -214,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 10000);
+        }, 0, 30000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
@@ -232,15 +236,12 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
                     if (result[0] <= 5000) {
 
-                        //   Toast.makeText(this, "Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
                         helpText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
                         helpText.setTextColor(Color.RED);
                         helpText.setVisibility(View.VISIBLE);
                         helpImage.setImageResource(R.drawable.alert_icon);
                         //Play alert sound
                         try {
-                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                             r.play();
                         } catch (Exception e) {
                             e.printStackTrace();
