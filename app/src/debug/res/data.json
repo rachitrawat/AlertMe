@@ -225,12 +225,12 @@
     "LONGITUDE":76.89872020000007
   },
   {
-    "PLACE OF ACCIDENT":"Ashoka University",
+    "PLACE OF ACCIDENT":"Test",
     "NH/SH/MDR/OTHER":"",
     "FATALITIES IN 2015":2,
     "FATALITIES IN 2016":3,
     "CAUSE OF ACCIDENT":"Rough Driving & Over Speeding",
-    "LATITUDE":28.945532 ,
-    "LONGITUDE":77.10237000000006
+    "LATITUDE":0 ,
+    "LONGITUDE":0
   }
 ]
