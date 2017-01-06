@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             } else {
                 progessBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
-                helpImage.setVisibility(View.VISIBLE);
                 helpImage.setImageResource(R.drawable.error_icon);
                 helpText.setText("Internet Connection Required!");
                 helpText.setVisibility(View.VISIBLE);
@@ -181,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
                     progessBar.setVisibility(View.GONE);
                     progressBarText.setVisibility(View.GONE);
-                    helpImage.setVisibility(View.VISIBLE);
                     helpImage.setImageResource(R.drawable.error_icon);
                     helpText.setText("Location permission required!");
                     helpText.setVisibility(View.VISIBLE);
