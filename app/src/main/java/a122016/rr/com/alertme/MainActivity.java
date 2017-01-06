@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
+
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Timer timer;
     private GoogleApiClient mGoogleApiClient;
     private ImageView safeImage;
+    private ImageView errorImage;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -78,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         alertImage.setVisibility(View.INVISIBLE);
         safeImage = (ImageView) findViewById(R.id.safe_image);
         safeImage.setVisibility(View.INVISIBLE);
+        errorImage = (ImageView) findViewById(R.id.error_image);
+        errorImage.setVisibility(View.INVISIBLE);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -88,27 +93,35 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     .build();
         }
 
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            // Get a reference to the ConnectivityManager to check state of network connectivity
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
+            // Get details on the currently active default data network
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            final LoaderManager loaderManager = getLoaderManager();
+            // If there is a network connection, fetch data
+            if (networkInfo != null && networkInfo.isConnected()) {
 
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
+                // Get a reference to the LoaderManager, in order to interact with loaders.
+                final LoaderManager loaderManager = getLoaderManager();
 
-            loaderManager.initLoader(PLACES_LOADER_ID, null, this);
+                // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+                // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+                // because this activity implements the LoaderCallbacks interface).
 
-        } else {
-            Toast.makeText(this, "Network Connection Required.", Toast.LENGTH_SHORT).show();
+                loaderManager.initLoader(PLACES_LOADER_ID, null, this);
+
+            } else {
+                progessBar.setVisibility(View.GONE);
+                progressBarText.setVisibility(View.GONE);
+                errorImage.setVisibility(View.VISIBLE);
+                alertText.setText("Internet Connection Required!");
+                alertText.setVisibility(View.VISIBLE);
+                alertText.setTextColor(Color.BLACK);
+            }
         }
     }
 
@@ -132,10 +145,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            // Toast.makeText(this, "" + mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-        }
-
 
     }
 
@@ -174,16 +183,14 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
 
                 } else {
-
                     // permission denied
 
-                    Toast.makeText(this, "This app requires location permission to function.", Toast.LENGTH_LONG).show();
-
-                    // exit the app
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    progessBar.setVisibility(View.GONE);
+                    progressBarText.setVisibility(View.GONE);
+                    errorImage.setVisibility(View.VISIBLE);
+                    alertText.setText("Location permission required!");
+                    alertText.setVisibility(View.VISIBLE);
+                    alertText.setTextColor(Color.BLACK);
 
                 }
                 return;
@@ -196,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public Loader<ArrayList<Place>> onCreateLoader(int id, Bundle args) {
+        Log.e(LOG_TAG,"Loader Started");
         return new PlacesLoader(this, PLACES_REQUEST_URL);
     }
 
@@ -215,50 +223,62 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 30000);
+        }, 0, 10000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
 
-        for (Place temp : data) {
+        Log.e(LOG_TAG, "location access " + (mLastLocation != null));
 
-            float[] result = new float[1];
-            if (temp.getLatitude() != 0) {
-                Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
-                        temp.getLatitude(), temp.getLongitude(), result);
-                Log.i(LOG_TAG, "result: " + result[0]);
+        if (mLastLocation != null) {
+            for (Place temp : data) {
 
-                if (result[0] <= 5000) {
+                float[] result = new float[1];
+                if (temp.getLatitude() != 0) {
+                    Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
+                            temp.getLatitude(), temp.getLongitude(), result);
+                    Log.i(LOG_TAG, "result: " + result[0]);
 
-                    //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
-                    alertText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
-                    alertText.setTextColor(Color.RED);
-                    alertText.setVisibility(View.VISIBLE);
-                    alertImage.setVisibility(View.VISIBLE);
-                    //Play alert sound
-                    try {
-                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                        r.play();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (result[0] <= 5000) {
+
+                        //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
+                        alertText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
+                        alertText.setTextColor(Color.RED);
+                        alertText.setVisibility(View.VISIBLE);
+                        alertImage.setVisibility(View.VISIBLE);
+                        //Play alert sound
+                        try {
+                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                            r.play();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        errorImage.setVisibility(View.INVISIBLE);
+                        alertText.setText("You are in a safe area.");
+                        alertText.setTextColor(Color.parseColor("#388E3C"));
+                        alertText.setVisibility(View.VISIBLE);
+                        safeImage.setVisibility(View.VISIBLE);
                     }
 
-                } else {
-                    alertText.setText("You are in a safe area.");
-                    alertText.setTextColor(Color.parseColor("#388E3C"));
-                    alertText.setVisibility(View.VISIBLE);
-                    safeImage.setVisibility(View.VISIBLE);
                 }
-
             }
-        }
 
-        arrayList = data;
-        // listButton.setVisibility(View.VISIBLE);
-        mapButton.setVisibility(View.VISIBLE);
+            arrayList = data;
+            // listButton.setVisibility(View.VISIBLE);
+            mapButton.setVisibility(View.VISIBLE);
+        } else {
+            errorImage.setVisibility(View.VISIBLE);
+            alertText.setText("Error getting your location!");
+            alertText.setVisibility(View.VISIBLE);
+            alertText.setTextColor(Color.BLACK);
+            Toast.makeText(this, "Make Sure you've enabled location in settings.", Toast.LENGTH_LONG).show();
+        }
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
+
     }
 
     @Override
