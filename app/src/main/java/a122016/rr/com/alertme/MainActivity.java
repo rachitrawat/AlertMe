@@ -53,12 +53,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private TextView progressBarText;
     private ProgressBar progessBar;
     private Location mLastLocation;
-    private TextView alertText;
-    private ImageView alertImage;
+    private TextView helpText;
+    private ImageView helpImage;
     private Timer timer;
     private GoogleApiClient mGoogleApiClient;
-    private ImageView safeImage;
-    private ImageView errorImage;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -76,14 +74,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         mapButton.setVisibility(View.INVISIBLE);
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        alertText = (TextView) findViewById(R.id.alert_text_view);
-        alertText.setVisibility(View.INVISIBLE);
-        alertImage = (ImageView) findViewById(R.id.alert_image);
-        alertImage.setVisibility(View.INVISIBLE);
-        safeImage = (ImageView) findViewById(R.id.safe_image);
-        safeImage.setVisibility(View.INVISIBLE);
-        errorImage = (ImageView) findViewById(R.id.error_image);
-        errorImage.setVisibility(View.INVISIBLE);
+        helpText = (TextView) findViewById(R.id.alert_text_view);
+        helpText.setVisibility(View.INVISIBLE);
+        helpImage = (ImageView) findViewById(R.id.help_image);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -118,10 +111,11 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             } else {
                 progessBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
-                errorImage.setVisibility(View.VISIBLE);
-                alertText.setText("Internet Connection Required!");
-                alertText.setVisibility(View.VISIBLE);
-                alertText.setTextColor(Color.BLACK);
+                helpImage.setVisibility(View.VISIBLE);
+                helpImage.setImageResource(R.drawable.error_icon);
+                helpText.setText("Internet Connection Required!");
+                helpText.setVisibility(View.VISIBLE);
+                helpText.setTextColor(Color.BLACK);
             }
         }
     }
@@ -187,12 +181,11 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
                     progessBar.setVisibility(View.GONE);
                     progressBarText.setVisibility(View.GONE);
-                    errorImage.setVisibility(View.VISIBLE);
-                    alertText.setText("Location permission required!");
-                    alertText.setVisibility(View.VISIBLE);
-                    alertText.setTextColor(Color.BLACK);
-                    safeImage.setVisibility(View.INVISIBLE);
-                    alertImage.setVisibility(View.INVISIBLE);
+                    helpImage.setVisibility(View.VISIBLE);
+                    helpImage.setImageResource(R.drawable.error_icon);
+                    helpText.setText("Location permission required!");
+                    helpText.setVisibility(View.VISIBLE);
+                    helpText.setTextColor(Color.BLACK);
                 }
                 return;
             }
@@ -242,12 +235,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     if (result[0] <= 5000) {
 
                         //   Toast.makeText(this, "Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
-                        alertText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
-                        alertText.setTextColor(Color.RED);
-                        alertText.setVisibility(View.VISIBLE);
-                        alertImage.setVisibility(View.VISIBLE);
-                        safeImage.setVisibility(View.INVISIBLE);
-                        errorImage.setVisibility(View.INVISIBLE);
+                        helpText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
+                        helpText.setTextColor(Color.RED);
+                        helpText.setVisibility(View.VISIBLE);
+                        helpImage.setImageResource(R.drawable.alert_icon);
                         //Play alert sound
                         try {
                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -258,12 +249,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         }
 
                     } else {
-                        safeImage.setVisibility(View.INVISIBLE);
-                        errorImage.setVisibility(View.INVISIBLE);
-                        alertText.setText("You are in a safe area.");
-                        alertText.setTextColor(Color.parseColor("#388E3C"));
-                        alertText.setVisibility(View.VISIBLE);
-                        safeImage.setVisibility(View.VISIBLE);
+                        helpImage.setImageResource(R.drawable.safe_icon);
+                        helpText.setText("You are in a safe area.");
+                        helpText.setTextColor(Color.parseColor("#388E3C"));
+                        helpText.setVisibility(View.VISIBLE);
                     }
 
                 }
@@ -273,12 +262,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // listButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
         } else {
-            safeImage.setVisibility(View.INVISIBLE);
-            alertImage.setVisibility(View.INVISIBLE);
-            errorImage.setVisibility(View.VISIBLE);
-            alertText.setText("Error getting your location!");
-            alertText.setVisibility(View.VISIBLE);
-            alertText.setTextColor(Color.BLACK);
+            helpImage.setImageResource(R.drawable.error_icon);
+            helpText.setText("Error getting your location!");
+            helpText.setVisibility(View.VISIBLE);
+            helpText.setTextColor(Color.BLACK);
         }
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);

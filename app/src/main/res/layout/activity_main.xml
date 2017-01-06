@@ -21,25 +21,10 @@
         tools:hint="Alert" />
 
     <ImageView
-        android:id="@+id/alert_image"
+        android:id="@+id/help_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/alert_text_view"
-        android:src="@drawable/alert_icon" />
-
-    <ImageView
-        android:id="@+id/safe_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/alert_text_view"
-        android:src="@drawable/safe_icon" />
-
-    <ImageView
-        android:id="@+id/error_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/alert_text_view"
-        android:src="@drawable/error_icon" />
+        android:layout_above="@id/alert_text_view" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
