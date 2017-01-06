@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
@@ -145,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
     }
 
     @Override
@@ -191,7 +191,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     alertText.setText("Location permission required!");
                     alertText.setVisibility(View.VISIBLE);
                     alertText.setTextColor(Color.BLACK);
-
+                    safeImage.setVisibility(View.INVISIBLE);
+                    alertImage.setVisibility(View.INVISIBLE);
                 }
                 return;
             }
@@ -203,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public Loader<ArrayList<Place>> onCreateLoader(int id, Bundle args) {
-        Log.e(LOG_TAG,"Loader Started");
         return new PlacesLoader(this, PLACES_REQUEST_URL);
     }
 
@@ -241,11 +241,13 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
                     if (result[0] <= 5000) {
 
-                        //   Toast.makeText(this, "Alert! Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
+                        //   Toast.makeText(this, "Accident Prone Area: " + temp.getPlaceOfAccident(), Toast.LENGTH_SHORT).show();
                         alertText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
                         alertText.setTextColor(Color.RED);
                         alertText.setVisibility(View.VISIBLE);
                         alertImage.setVisibility(View.VISIBLE);
+                        safeImage.setVisibility(View.INVISIBLE);
+                        errorImage.setVisibility(View.INVISIBLE);
                         //Play alert sound
                         try {
                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -256,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         }
 
                     } else {
+                        safeImage.setVisibility(View.INVISIBLE);
                         errorImage.setVisibility(View.INVISIBLE);
                         alertText.setText("You are in a safe area.");
                         alertText.setTextColor(Color.parseColor("#388E3C"));
@@ -270,15 +273,15 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // listButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
         } else {
+            safeImage.setVisibility(View.INVISIBLE);
+            alertImage.setVisibility(View.INVISIBLE);
             errorImage.setVisibility(View.VISIBLE);
             alertText.setText("Error getting your location!");
             alertText.setVisibility(View.VISIBLE);
             alertText.setTextColor(Color.BLACK);
-            Toast.makeText(this, "Make Sure you've enabled location in settings.", Toast.LENGTH_LONG).show();
         }
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
-
     }
 
     @Override
