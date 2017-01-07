@@ -1,6 +1,5 @@
 package a122016.rr.com.alertme;
 
-
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +7,7 @@ import android.content.IntentSender;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -15,6 +15,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,10 +47,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.util.Log.e;
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
+
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -62,21 +65,37 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     public static ArrayList<Place> arrayList;
     private static LocationRequest mLocationRequest;
     private static int ALERT_ON = 0;
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+    /**
+     * Represents a geographical location.
+     */
+    protected Location mCurrentLocation;
+    /**
+     * The formatted location address.
+     */
+    protected String mAddressOutput;
+
     private Button listButton;
     private Button mapButton;
     private TextView progressBarText;
     private ProgressBar progessBar;
-    private Location mCurrentLocation;
+    private String LOCATION_KEY;
     private TextView helpText;
     private TextView areaText;
     private TextView speedText;
     private ImageView helpImage;
     private Timer timer;
-    private GoogleApiClient mGoogleApiClient;
     private Uri notification;
     private Ringtone r;
-    private String LOCATION_KEY;
     private Vibrator v;
+    /**
+     * Receiver registered with this activity to get the response from FetchAddressIntentService.
+     */
+    private AddressResultReceiver mResultReceiver;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -84,11 +103,46 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         return arrayList;
     }
 
+    /**
+     * Creates an intent, adds location data to it as an extra, and starts the intent service for
+     * fetching an address.
+     */
+    protected void startIntentService() {
+        Log.e(LOG_TAG, "intent started");
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
+    }
+
+    /**
+     * Builds a GoogleApiClient. Uses {@code #addApi} to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         updateValuesFromBundle(savedInstanceState);
+
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        buildGoogleApiClient();
 
         listButton = (Button) findViewById(R.id.list_button);
         listButton.setVisibility(View.INVISIBLE);
@@ -108,15 +162,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         //create location request object
         mLocationRequest = createLocationRequest();
@@ -162,7 +207,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
     @Override
@@ -223,13 +270,17 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
             //start getting location updates
             startLocationUpdates();
+
         }
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(LOG_TAG, "Connection suspended");
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -240,13 +291,15 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
         super.onStop();
     }
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
+        mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
@@ -254,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
 
     protected void startLocationUpdates() {
+        //  we already have permission
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
@@ -263,6 +317,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         if (mCurrentLocation.getSpeed() * 18 / 5 - location.getSpeed() * 18 / 5 > 100)
             Toast.makeText(this, "Accident Detected! ", Toast.LENGTH_SHORT).show();
         mCurrentLocation = location;
+
+        Log.e(LOG_TAG, "change location");
+
     }
 
     @Override
@@ -311,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         final ArrayList<Place> DATA = data;
 
         timer = new Timer();
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -321,10 +378,15 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 10000);
+        }, 0, 15000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
+
+        if (mCurrentLocation != null && Geocoder.isPresent()) {
+            startIntentService();
+        }
+
         int c = 0;
 
         if (mCurrentLocation != null) {
@@ -342,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpText.setText("You are in an Accident Prone Area.");
                         helpText.setTextColor(Color.RED);
                         helpImage.setImageResource(R.drawable.alert_icon);
-                        areaText.setText("Location: " + temp.getPlaceOfAccident());
+                        areaText.setText("Location: " + mAddressOutput);
                         speedText.setText("Speed: " + mCurrentLocation.getSpeed());
                         if (ALERT_ON == 0) {
                             playAlertSound();
@@ -354,7 +416,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpImage.setImageResource(R.drawable.safe_icon);
                         helpText.setText("You are in a Safe Area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
-                        areaText.setText("Location: " + "TODO");
+                        areaText.setText("Location: " + mAddressOutput);
                         if (c == data.size() - 1) {
                             ALERT_ON = 0;
                         }
@@ -423,6 +485,24 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
             }
 
+        }
+    }
+
+    /**
+     * Receiver for data sent from FetchAddressIntentService.
+     */
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            // Store the address stringm
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
         }
     }
 }
