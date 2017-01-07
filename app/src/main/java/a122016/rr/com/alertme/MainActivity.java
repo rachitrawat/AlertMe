@@ -47,9 +47,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.util.Log.e;
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
-
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
@@ -77,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     /**
      * The formatted location address.
      */
-    protected String mAddressOutput;
+    protected String mAddressOutput = "Fetching...";
 
     private Button listButton;
     private Button mapButton;
@@ -270,6 +267,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
             //start getting location updates
             startLocationUpdates();
+
+            if (mCurrentLocation != null && Geocoder.isPresent()) {
+                startIntentService();
+            }
 
         }
 
