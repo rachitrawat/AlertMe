@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,15 +37,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
@@ -61,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     public static ArrayList<Place> arrayList;
     private static LocationRequest mLocationRequest;
+    private static int ALERT_ON = 0;
     private Button listButton;
     private Button mapButton;
     private TextView progressBarText;
@@ -251,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e(LOG_TAG, "Location change: ");
+       // Log.e(LOG_TAG, "Location change: ");
         mCurrentLocation = location;
     }
 
@@ -311,42 +307,45 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 15000);
+        }, 0, 12000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
+        int c = 0;
 
         if (mCurrentLocation != null) {
-            Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+         //   Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
             for (Place temp : data) {
 
                 float[] result = new float[1];
                 if (temp.getLatitude() != 0) {
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getLatitude(), temp.getLongitude(), result);
-                    Log.i(LOG_TAG, "result: " + result[0]);
 
-                    if (result[0] <= 5000) {
+                    //Log.e(LOG_TAG, "result: " + result[0]);
 
+                    if (result[0] <= 1000) {
                         helpText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
                         helpText.setTextColor(Color.RED);
                         helpText.setVisibility(View.VISIBLE);
                         helpImage.setImageResource(R.drawable.alert_icon);
-                        //Play alert sound
-                        try {
-                            r.play();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (ALERT_ON == 0) {
+                            playAlertSound();
                         }
+                        ALERT_ON = 1;
                         break;
                     } else {
                         helpImage.setImageResource(R.drawable.safe_icon);
                         helpText.setText("You are in a safe area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
                         helpText.setVisibility(View.VISIBLE);
+                        if (c == data.size() - 1) {
+                            ALERT_ON = 0;
+                        }
                     }
 
                 }
+                c++;
             }
 
             arrayList = data;
@@ -360,6 +359,16 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
+    }
+
+    public void playAlertSound() {
+        //Play alert sound
+        try {
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
