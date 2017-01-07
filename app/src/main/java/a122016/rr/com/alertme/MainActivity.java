@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private GoogleApiClient mGoogleApiClient;
     private Uri notification;
     private Ringtone r;
+    private String LOCATION_KEY;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        updateValuesFromBundle(savedInstanceState);
+
         listButton = (Button) findViewById(R.id.list_button);
         listButton.setVisibility(View.INVISIBLE);
         mapButton = (Button) findViewById(R.id.map_button);
@@ -234,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(30000);
+        mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
@@ -248,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e(LOG_TAG, "Location change");
+        Log.e(LOG_TAG, "Location change: ");
         mCurrentLocation = location;
     }
 
@@ -308,14 +311,13 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 30000);
+        }, 0, 15000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
 
-        Log.e(LOG_TAG, "location access " + (mCurrentLocation != null));
-
         if (mCurrentLocation != null) {
+            Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
             for (Place temp : data) {
 
                 float[] result = new float[1];
@@ -369,5 +371,23 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
         Intent i = new Intent(this, a122016.rr.com.alertme.ListActivity.class);
         startActivity(i);
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+
+            // Update the value of mCurrentLocation from the Bundle
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that
+                // mCurrentLocationis not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+        }
     }
 }
