@@ -20,6 +20,29 @@
         android:textStyle="bold"
         tools:hint="Alert" />
 
+    <TextView
+        android:id="@+id/area_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alert_text_view"
+        android:layout_centerInParent="true"
+        android:padding="16dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:hint="area" />
+
+
+    <TextView
+        android:id="@+id/speed_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/area_text_view"
+        android:layout_centerInParent="true"
+        android:padding="16dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:hint="Speed" />
+
     <ImageView
         android:id="@+id/help_image"
         android:layout_width="match_parent"

@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,6 +43,9 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
@@ -63,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private ProgressBar progessBar;
     private Location mCurrentLocation;
     private TextView helpText;
+    private TextView areaText;
+    private TextView speedText;
     private ImageView helpImage;
     private Timer timer;
     private GoogleApiClient mGoogleApiClient;
@@ -92,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         progressBarText.setVisibility(View.INVISIBLE);
         helpText = (TextView) findViewById(R.id.alert_text_view);
         helpText.setVisibility(View.INVISIBLE);
+        areaText = (TextView) findViewById(R.id.area_text_view);
+        areaText.setVisibility(View.INVISIBLE);
+        speedText = (TextView) findViewById(R.id.speed_text_view);
+        speedText.setVisibility(View.INVISIBLE);
         helpImage = (ImageView) findViewById(R.id.help_image);
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
@@ -233,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
+        mLocationRequest.setInterval(5000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
@@ -247,7 +257,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     @Override
     public void onLocationChanged(Location location) {
-       // Log.e(LOG_TAG, "Location change: ");
+        if (mCurrentLocation.getSpeed() * 18 / 5 - location.getSpeed() * 18 / 5 > 100)
+            Toast.makeText(this, "Accident Detected! ", Toast.LENGTH_SHORT).show();
         mCurrentLocation = location;
     }
 
@@ -307,14 +318,14 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     }
                 });
             }
-        }, 0, 12000);
+        }, 0, 10000);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
         int c = 0;
 
         if (mCurrentLocation != null) {
-         //   Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+            //   Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
             for (Place temp : data) {
 
                 float[] result = new float[1];
@@ -325,10 +336,11 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     //Log.e(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
-                        helpText.setText("Accident Prone Area: " + temp.getPlaceOfAccident());
+                        helpText.setText("Accident Prone Area. ");
                         helpText.setTextColor(Color.RED);
-                        helpText.setVisibility(View.VISIBLE);
                         helpImage.setImageResource(R.drawable.alert_icon);
+                        areaText.setText("Location: " + temp.getPlaceOfAccident());
+                        speedText.setText("Speed: " + mCurrentLocation.getSpeed());
                         if (ALERT_ON == 0) {
                             playAlertSound();
                         }
@@ -338,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpImage.setImageResource(R.drawable.safe_icon);
                         helpText.setText("You are in a safe area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
-                        helpText.setVisibility(View.VISIBLE);
+                        areaText.setText("Location: " + "TODO");
                         if (c == data.size() - 1) {
                             ALERT_ON = 0;
                         }
@@ -348,12 +360,22 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 c++;
             }
 
+            if (mCurrentLocation.getSpeed() * 18 / 5 >= 45) {
+                speedText.setTextColor(Color.RED);
+            } else
+                speedText.setTextColor(Color.parseColor("#388E3C"));
+
+
             arrayList = data;
             // listButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
+            areaText.setVisibility(View.VISIBLE);
+            speedText.setVisibility(View.VISIBLE);
+            helpText.setVisibility(View.VISIBLE);
+            speedText.setText("Speed: " + (int) (mCurrentLocation.getSpeed() * 18 / 5) + " km/h");
         } else {
             helpImage.setImageResource(R.drawable.error_icon);
-            helpText.setText("Error getting your location!");
+            helpText.setText("Problem getting your location!");
             helpText.setVisibility(View.VISIBLE);
             helpText.setTextColor(Color.BLACK);
         }
