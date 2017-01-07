@@ -4,6 +4,7 @@ package a122016.rr.com.alertme;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -29,7 +30,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -47,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
      * This really only comes into play if you're using multiple loaders.
      */
     private static final int PLACES_LOADER_ID = 1;
+    private static final int REQUEST_CHECK_SETTINGS = 1;
+
     public static ArrayList<Place> arrayList;
     private Button listButton;
     private Button mapButton;
@@ -76,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         mapButton.setVisibility(View.INVISIBLE);
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
+        progessBar.setVisibility(View.INVISIBLE);
+        progressBarText.setVisibility(View.INVISIBLE);
         helpText = (TextView) findViewById(R.id.alert_text_view);
         helpText.setVisibility(View.INVISIBLE);
         helpImage = (ImageView) findViewById(R.id.help_image);
@@ -92,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
             // Get a reference to the ConnectivityManager to check state of network connectivity
             ConnectivityManager connMgr = (ConnectivityManager)
                     getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -111,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 // because this activity implements the LoaderCallbacks interface).
 
                 loaderManager.initLoader(PLACES_LOADER_ID, null, this);
+
+                progessBar.setVisibility(View.VISIBLE);
+                progressBarText.setVisibility(View.VISIBLE);
 
             } else {
                 progessBar.setVisibility(View.GONE);
@@ -142,6 +157,49 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
         }
 
+        // create a LocationSettingsRequest.Builder
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(createLocationRequest());
+
+        //check whether the current location settings are satisfied
+        final PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                        builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+
+                final Status status = locationSettingsResult.getStatus();
+                // final LocationSettingsStates x = locationSettingsResult.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        // ...
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    MainActivity.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        //    ...
+                        break;
+                }
+            }
+        });
+
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
@@ -160,6 +218,14 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(35000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        return mLocationRequest;
     }
 
     @Override
