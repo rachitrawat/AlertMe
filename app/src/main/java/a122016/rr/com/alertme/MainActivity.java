@@ -15,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Uri notification;
     private Ringtone r;
     private String LOCATION_KEY;
+    private Vibrator v;
 
 
     public static ArrayList<Place> getArrayList() {
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         helpImage = (ImageView) findViewById(R.id.help_image);
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -343,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         speedText.setText("Speed: " + mCurrentLocation.getSpeed());
                         if (ALERT_ON == 0) {
                             playAlertSound();
+                            v.vibrate(500);
                         }
                         ALERT_ON = 1;
                         break;
