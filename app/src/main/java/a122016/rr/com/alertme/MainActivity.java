@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     .build();
         }
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get a reference to the ConnectivityManager to check state of network connectivity
             ConnectivityManager connMgr = (ConnectivityManager)
                     getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -151,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
         }
 
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(35000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
     }
 
