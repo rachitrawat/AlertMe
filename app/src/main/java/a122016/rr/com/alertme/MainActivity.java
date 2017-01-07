@@ -33,6 +33,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -47,7 +48,7 @@ import java.util.TimerTask;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
-public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>> {
+public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -59,11 +60,12 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private static final int REQUEST_CHECK_SETTINGS = 1;
 
     public static ArrayList<Place> arrayList;
+    private static LocationRequest mLocationRequest;
     private Button listButton;
     private Button mapButton;
     private TextView progressBarText;
     private ProgressBar progessBar;
-    private Location mLastLocation;
+    private Location mCurrentLocation;
     private TextView helpText;
     private ImageView helpImage;
     private Timer timer;
@@ -103,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        //create location request object
+        mLocationRequest = createLocationRequest();
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get a reference to the ConnectivityManager to check state of network connectivity
@@ -157,50 +162,57 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
         }
 
-        // create a LocationSettingsRequest.Builder
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(createLocationRequest());
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-        //check whether the current location settings are satisfied
-        final PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
-                        builder.build());
+            // create a LocationSettingsRequest.Builder
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(mLocationRequest);
 
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+            //check whether the current location settings are satisfied
+            final PendingResult<LocationSettingsResult> result =
+                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                            builder.build());
 
-                final Status status = locationSettingsResult.getStatus();
-                // final LocationSettingsStates x = locationSettingsResult.getLocationSettingsStates();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        // All location settings are satisfied. The client can
-                        // initialize location requests here.
-                        // ...
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied, but this can be fixed
-                        // by showing the user a dialog.
-                        try {
-                            // Show the dialog by calling startResolutionForResult(),
-                            // and check the result in onActivityResult().
-                            status.startResolutionForResult(
-                                    MainActivity.this,
-                                    REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            // Ignore the error.
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have no way
-                        // to fix the settings so we won't show the dialog.
-                        //    ...
-                        break;
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                @Override
+                public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+
+                    final Status status = locationSettingsResult.getStatus();
+                    // final LocationSettingsStates x = locationSettingsResult.getLocationSettingsStates();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            // All location settings are satisfied. The client can
+                            // initialize location requests here.
+                            // ...
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            // Location settings are not satisfied, but this can be fixed
+                            // by showing the user a dialog.
+                            try {
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                status.startResolutionForResult(
+                                        MainActivity.this,
+                                        REQUEST_CHECK_SETTINGS);
+                            } catch (IntentSender.SendIntentException e) {
+                                // Ignore the error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            // Location settings are not satisfied. However, we have no way
+                            // to fix the settings so we won't show the dialog.
+                            //    ...
+                            break;
+                    }
                 }
-            }
-        });
+            });
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            //start getting location updates
+            startLocationUpdates();
+        }
+
     }
 
     @Override
@@ -222,10 +234,22 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(35000);
+        mLocationRequest.setInterval(30000);
+        mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
+    }
+
+
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.e(LOG_TAG, "Location change");
+        mCurrentLocation = location;
     }
 
     @Override
@@ -289,14 +313,14 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     public void afterLoadFinished(ArrayList<Place> data) {
 
-        Log.e(LOG_TAG, "location access " + (mLastLocation != null));
+        Log.e(LOG_TAG, "location access " + (mCurrentLocation != null));
 
-        if (mLastLocation != null) {
+        if (mCurrentLocation != null) {
             for (Place temp : data) {
 
                 float[] result = new float[1];
                 if (temp.getLatitude() != 0) {
-                    Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
+                    Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getLatitude(), temp.getLongitude(), result);
                     Log.i(LOG_TAG, "result: " + result[0]);
 
