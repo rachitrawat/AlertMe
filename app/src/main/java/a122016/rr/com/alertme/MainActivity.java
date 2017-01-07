@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                     //Log.e(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
-                        helpText.setText("Accident Prone Area. ");
+                        helpText.setText("You are in an Accident Prone Area.");
                         helpText.setTextColor(Color.RED);
                         helpImage.setImageResource(R.drawable.alert_icon);
                         areaText.setText("Location: " + temp.getPlaceOfAccident());
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         break;
                     } else {
                         helpImage.setImageResource(R.drawable.safe_icon);
-                        helpText.setText("You are in a safe area.");
+                        helpText.setText("You are in a Safe Area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
                         areaText.setText("Location: " + "TODO");
                         if (c == data.size() - 1) {
