@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
+                        break;
                     } else {
                         helpImage.setImageResource(R.drawable.safe_icon);
                         helpText.setText("You are in a safe area.");
