@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     @Override
     protected void onStop() {
         if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+          //  mGoogleApiClient.disconnect();
         }
         super.onStop();
     }
