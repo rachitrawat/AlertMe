@@ -136,7 +136,8 @@ public class MainActivity extends AppCompatActivity
      * fetching an address.
      */
     protected void startIntentService() {
-        Log.e(LOG_TAG, "intent started");
+        //  Log.i(LOG_TAG, "intent service started");
+
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(this, FetchAddressIntentService.class);
 
@@ -450,12 +451,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        if (mCurrentLocation.getSpeed() * 18 / 5 - location.getSpeed() * 18 / 5 > 100)
-            Toast.makeText(this, "Accident Detected! ", Toast.LENGTH_SHORT).show();
+//        if (mCurrentLocation.getSpeed() * 18 / 5 - location.getSpeed() * 18 / 5 > 100)
+//            Toast.makeText(this, "Accident Detected! ", Toast.LENGTH_SHORT).show();
         mCurrentLocation = location;
-
-        Log.e(LOG_TAG, "change location");
-
+        Log.i(LOG_TAG, "Location Updated");
     }
 
     @Override
