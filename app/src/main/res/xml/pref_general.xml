@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:capitalize="words"
+        android:inputType="textCapWords"
+        android:key="name_text"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_display_name" />
+
+    <EditTextPreference
+        android:inputType="number"
+        android:maxLength="10"
+        android:key="emergency_number1"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Emergency Contact 1" />
+
+    <EditTextPreference
+        android:inputType="number"
+        android:maxLength="10"
+        android:key="emergency_number2"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Emergency Contact 2" />
+
+    <EditTextPreference
+        android:inputType="number"
+        android:maxLength="10"
+        android:key="emergency_number3"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Emergency Contact 3" />
+
+
+
+</PreferenceScreen>

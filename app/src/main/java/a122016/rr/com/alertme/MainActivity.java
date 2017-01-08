@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Geocoder;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +29,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -104,7 +108,13 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
      */
     private AddressResultReceiver mResultReceiver;
-
+    private String namePref;
+    private String emerNo1Pref;
+    private String emerNo2Pref;
+    private String emerNo3Pref;
+    private boolean notificationPref;
+    private boolean soundPref;
+    private boolean vibratePref;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -173,6 +183,33 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
         //create location request object
         mLocationRequest = createLocationRequest();
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        namePref = sharedPrefs.getString(
+                "name_text",
+                "");
+
+        emerNo1Pref = sharedPrefs.getString(
+                "emergency_number1",
+                "");
+        emerNo2Pref = sharedPrefs.getString(
+                "emergency_number2",
+                "");
+
+        emerNo3Pref = sharedPrefs.getString(
+                "emergency_number3",
+                "");
+
+        notificationPref = sharedPrefs.getBoolean("notifications_new_message", true);
+
+        soundPref = sharedPrefs.getBoolean(
+                "notifications_new_message_sound",
+                true);
+
+        vibratePref = sharedPrefs.getBoolean(
+                "notifications_new_message_vibrate",
+                true);
+
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get a reference to the ConnectivityManager to check state of network connectivity
@@ -418,11 +455,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpImage.setImageResource(R.drawable.alert_icon);
                         areaText.setText("Location: " + mAddressOutput);
                         speedText.setText("Speed: " + mCurrentLocation.getSpeed());
-                        buildNotification(true);
-                        if (ALERT_ON == 0) {
-                            playAlertSound();
-                            v.vibrate(500);
-                        }
+                        if (notificationPref)
+                            buildNotification(true);
                         ALERT_ON = 1;
                         break;
                     } else {
@@ -430,7 +464,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpText.setText("You are in a Safe Area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
                         areaText.setText("Location: " + mAddressOutput);
-                        buildNotification(false);
+                        if (notificationPref)
+                            buildNotification(false);
                         if (c == data.size() - 1) {
                             ALERT_ON = 0;
                         }
@@ -490,6 +525,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                             .setVisibility(VISIBILITY_PUBLIC)
                             .setPriority(PRIORITY_MAX);
 
+            if (vibratePref)
+                v.vibrate(500);
+            if (soundPref)
+                playAlertSound();
         } else {
             mBuilder =
                     new NotificationCompat.Builder(this)
@@ -522,6 +561,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
+
     }
 
     @Override
@@ -588,5 +628,22 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // Store the address stringm
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
