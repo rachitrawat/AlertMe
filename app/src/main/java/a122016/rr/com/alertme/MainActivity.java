@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
     private Vibrator v;
     private boolean doubleBackToExitPressedOnce = false;
     private NotificationCompat.Builder mBuilder;
-
+    private FloatingActionButton fab;
 
     /**
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
@@ -170,12 +170,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Alert Engine Started", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                startAlertEngine();
             }
         });
 
@@ -284,6 +286,49 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    private void startAlertEngine() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        afterLoadFinished(arrayList);
+                    }
+                });
+            }
+        }, 0, 15000);
+        fab.setImageResource(R.drawable.ic_media_pause);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Alert Engine Stopped!", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+                stopAlertEngine();
+            }
+        });
+    }
+
+    private void stopAlertEngine() {
+        timer.cancel();
+        fab.setImageResource(R.drawable.ic_media_play);
+        helpText.setText("Press play button to start.");
+        helpText.setTextColor(Color.parseColor("#3949AB"));
+        helpImage.setVisibility(View.INVISIBLE);
+        areaText.setVisibility(View.INVISIBLE);
+        speedText.setVisibility(View.INVISIBLE);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Alert Engine Started!", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+                startAlertEngine();
+
+            }
+        });
     }
 
     private void execute_it() {
@@ -454,21 +499,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
-
-        final ArrayList<Place> DATA = data;
-
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        afterLoadFinished(DATA);
-                    }
-                });
-            }
-        }, 0, 15000);
+        arrayList = data;
+        fab.setVisibility(View.VISIBLE);
+        helpText.setText("Press play button to start.");
+        helpText.setTextColor(Color.parseColor("#3949AB"));
+        helpText.setVisibility(View.VISIBLE);
+        progessBar.setVisibility(View.GONE);
+        progressBarText.setVisibility(View.GONE);
     }
 
     public void afterLoadFinished(ArrayList<Place> data) {
@@ -521,8 +558,7 @@ public class MainActivity extends AppCompatActivity
             } else
                 speedText.setTextColor(Color.parseColor("#388E3C"));
 
-
-            arrayList = data;
+            helpImage.setVisibility(View.VISIBLE);
             areaText.setVisibility(View.VISIBLE);
             helpText.setVisibility(View.VISIBLE);
             speedText.setText("Speed: " + (int) (mCurrentLocation.getSpeed() * 18 / 5) + " km/h");
@@ -539,8 +575,7 @@ public class MainActivity extends AppCompatActivity
             helpText.setVisibility(View.VISIBLE);
             helpText.setTextColor(Color.BLACK);
         }
-        progessBar.setVisibility(View.GONE);
-        progressBarText.setVisibility(View.GONE);
+
     }
 
     public void playAlertSound() {
