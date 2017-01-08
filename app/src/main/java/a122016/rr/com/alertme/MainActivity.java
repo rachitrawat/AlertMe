@@ -61,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.R.attr.name;
 import static android.app.Notification.PRIORITY_MAX;
 import static android.app.Notification.VISIBILITY_PUBLIC;
 
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
      */
-    private MainActivity.AddressResultReceiver mResultReceiver;
+    private AddressResultReceiver mResultReceiver;
     private String namePref;
     private String emerNo1Pref;
     private String emerNo2Pref;
@@ -189,13 +188,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View header=navigationView.getHeaderView(0);
-        nameTextView = (TextView)header.findViewById(R.id.name_text_view);
-        phoneTextView = (TextView)header.findViewById(R.id.phone_text_view);
+        View header = navigationView.getHeaderView(0);
+        nameTextView = (TextView) header.findViewById(R.id.name_text_view);
+        phoneTextView = (TextView) header.findViewById(R.id.phone_text_view);
 
         updateValuesFromBundle(savedInstanceState);
 
-        mResultReceiver = new MainActivity.AddressResultReceiver(new Handler());
+        mResultReceiver = new AddressResultReceiver(new Handler());
         buildGoogleApiClient();
 
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -252,7 +251,7 @@ public class MainActivity extends AppCompatActivity
             phoneTextView.setText(phonePref);
 
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get a reference to the ConnectivityManager to check state of network connectivity
             ConnectivityManager connMgr = (ConnectivityManager)
                     getSystemService(Context.CONNECTIVITY_SERVICE);
