@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.R.attr.data;
 import static android.app.Notification.PRIORITY_MAX;
 import static android.app.Notification.VISIBILITY_PUBLIC;
 
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        afterLoadFinished(arrayList);
+                        afterLoadFinished();
                     }
                 });
             }
@@ -508,7 +509,7 @@ public class MainActivity extends AppCompatActivity
         progressBarText.setVisibility(View.GONE);
     }
 
-    public void afterLoadFinished(ArrayList<Place> data) {
+    public void afterLoadFinished() {
 
         if (mCurrentLocation != null && Geocoder.isPresent()) {
             startIntentService();
@@ -518,7 +519,7 @@ public class MainActivity extends AppCompatActivity
 
         if (mCurrentLocation != null) {
             //   Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
-            for (Place temp : data) {
+            for (Place temp : arrayList) {
 
                 float[] result = new float[1];
                 if (temp.getLatitude() != 0) {
@@ -544,7 +545,7 @@ public class MainActivity extends AppCompatActivity
                         areaText.setText("Location: " + mAddressOutput);
                         if (notificationPref)
                             buildNotification(false);
-                        if (c == data.size() - 1) {
+                        if (c == arrayList.size() - 1) {
                             ALERT_ON = 0;
                         }
                     }
