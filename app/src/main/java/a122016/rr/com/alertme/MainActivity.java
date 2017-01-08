@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Uri notification;
     private Ringtone r;
     private Vibrator v;
+    private boolean doubleBackToExitPressedOnce = false;
+
+
     /**
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
      */
@@ -505,5 +509,24 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // Store the address stringm
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 }
