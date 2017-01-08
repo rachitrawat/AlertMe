@@ -24,15 +24,21 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,10 +61,13 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.R.attr.name;
 import static android.app.Notification.PRIORITY_MAX;
 import static android.app.Notification.VISIBILITY_PUBLIC;
 
-public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
@@ -87,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
      */
     protected String mAddressOutput = "Fetching...";
 
-    private Button listButton;
-    private Button mapButton;
     private TextView progressBarText;
+    private TextView nameTextView;
+    private TextView phoneTextView;
     private ProgressBar progessBar;
     private String LOCATION_KEY;
     private TextView helpText;
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     /**
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
      */
-    private AddressResultReceiver mResultReceiver;
+    private MainActivity.AddressResultReceiver mResultReceiver;
     private String namePref;
     private String emerNo1Pref;
     private String emerNo2Pref;
@@ -115,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private boolean notificationPref;
     private boolean soundPref;
     private boolean vibratePref;
+    private String phonePref;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -153,19 +163,41 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 .build();
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View header=navigationView.getHeaderView(0);
+        nameTextView = (TextView)header.findViewById(R.id.name_text_view);
+        phoneTextView = (TextView)header.findViewById(R.id.phone_text_view);
+
         updateValuesFromBundle(savedInstanceState);
 
-        mResultReceiver = new AddressResultReceiver(new Handler());
+        mResultReceiver = new MainActivity.AddressResultReceiver(new Handler());
         buildGoogleApiClient();
 
-        listButton = (Button) findViewById(R.id.list_button);
-        listButton.setVisibility(View.INVISIBLE);
-        mapButton = (Button) findViewById(R.id.map_button);
-        mapButton.setVisibility(View.INVISIBLE);
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
         progessBar.setVisibility(View.INVISIBLE);
@@ -189,6 +221,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 "name_text",
                 "");
 
+        phonePref = sharedPrefs.getString(
+                "phone_text",
+                "");
+
         emerNo1Pref = sharedPrefs.getString(
                 "emergency_number1",
                 "");
@@ -210,8 +246,13 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 "notifications_new_message_vibrate",
                 true);
 
+        if (namePref != null && !namePref.isEmpty())
+            nameTextView.setText(namePref);
+        if (phonePref != null && !phonePref.isEmpty())
+            phoneTextView.setText(phonePref);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get a reference to the ConnectivityManager to check state of network connectivity
             ConnectivityManager connMgr = (ConnectivityManager)
                     getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -243,9 +284,10 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 helpText.setTextColor(Color.BLACK);
             }
         }
+
     }
 
-    public void execute_it(View view) {
+    private void execute_it() {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
@@ -482,8 +524,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
 
             arrayList = data;
-            // listButton.setVisibility(View.VISIBLE);
-            mapButton.setVisibility(View.VISIBLE);
             areaText.setVisibility(View.VISIBLE);
             helpText.setVisibility(View.VISIBLE);
             speedText.setText("Speed: " + (int) (mCurrentLocation.getSpeed() * 18 / 5) + " km/h");
@@ -569,9 +609,8 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
 
     }
 
-    public void openList(View view) {
-
-        Intent i = new Intent(this, a122016.rr.com.alertme.ListActivity.class);
+    private void openList() {
+        Intent i = new Intent(this, ListActivity.class);
         startActivity(i);
     }
 
@@ -593,23 +632,58 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
     }
 
+
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
             super.onBackPressed();
-            return;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_map) {
+            execute_it();
+        } else if (id == R.id.nav_list) {
+            openList();
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
         }
 
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        }, 2000);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     /**
@@ -628,22 +702,5 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // Store the address stringm
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

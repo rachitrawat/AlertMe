@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import static a122016.rr.com.alertme.MainActivity.arrayList;
 import static android.R.attr.data;
 import static android.os.Build.VERSION_CODES.N;
 import static com.google.android.gms.maps.CameraUpdateFactory.zoomIn;
