@@ -1,6 +1,8 @@
 package a122016.rr.com.alertme;
 
 import android.app.LoaderManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -21,9 +23,10 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -47,6 +50,9 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.app.Notification.PRIORITY_MAX;
+import static android.app.Notification.VISIBILITY_PUBLIC;
 
 public class MainActivity extends AppCompatActivity implements OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
 
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     private Ringtone r;
     private Vibrator v;
     private boolean doubleBackToExitPressedOnce = false;
+    private NotificationCompat.Builder mBuilder;
 
 
     /**
@@ -297,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     @Override
     protected void onStop() {
         if (mGoogleApiClient.isConnected()) {
-          //  mGoogleApiClient.disconnect();
+            //  mGoogleApiClient.disconnect();
         }
         super.onStop();
     }
@@ -411,6 +418,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpImage.setImageResource(R.drawable.alert_icon);
                         areaText.setText("Location: " + mAddressOutput);
                         speedText.setText("Speed: " + mCurrentLocation.getSpeed());
+                        buildNotification(true);
                         if (ALERT_ON == 0) {
                             playAlertSound();
                             v.vibrate(500);
@@ -422,6 +430,7 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                         helpText.setText("You are in a Safe Area.");
                         helpText.setTextColor(Color.parseColor("#388E3C"));
                         areaText.setText("Location: " + mAddressOutput);
+                        buildNotification(false);
                         if (c == data.size() - 1) {
                             ALERT_ON = 0;
                         }
@@ -441,9 +450,15 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             // listButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
             areaText.setVisibility(View.VISIBLE);
-            speedText.setVisibility(View.VISIBLE);
             helpText.setVisibility(View.VISIBLE);
             speedText.setText("Speed: " + (int) (mCurrentLocation.getSpeed() * 18 / 5) + " km/h");
+
+            if (mCurrentLocation.getSpeed() != 0) {
+                speedText.setVisibility(View.VISIBLE);
+            } else {
+                speedText.setVisibility(View.INVISIBLE);
+            }
+
         } else {
             helpImage.setImageResource(R.drawable.error_icon);
             helpText.setText("Problem getting your location!");
@@ -462,6 +477,51 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
             e.printStackTrace();
         }
 
+    }
+
+    public void buildNotification(boolean is_alert) {
+
+        if (is_alert) {
+            mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_warning_white_24dp)
+                            .setContentTitle("Accident Prone Area")
+                            .setContentText(mAddressOutput)
+                            .setVisibility(VISIBILITY_PUBLIC)
+                            .setPriority(PRIORITY_MAX);
+
+        } else {
+            mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_beenhere_white_24dp)
+                            .setContentTitle("Safe Area")
+                            .setContentText(mAddressOutput)
+                            .setVisibility(VISIBILITY_PUBLIC);
+        }
+
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
     @Override
@@ -493,24 +553,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
         }
     }
 
-    /**
-     * Receiver for data sent from FetchAddressIntentService.
-     */
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        /**
-         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
-         */
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            // Store the address stringm
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
@@ -528,5 +570,23 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
                 doubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    /**
+     * Receiver for data sent from FetchAddressIntentService.
+     */
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            // Store the address stringm
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+        }
     }
 }
