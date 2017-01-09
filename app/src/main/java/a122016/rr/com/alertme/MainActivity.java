@@ -491,11 +491,8 @@ public class MainActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted
-
-                    // restart the activity
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
+                    // recreate activity
+                    recreate();
 
 
                 } else {
@@ -504,6 +501,7 @@ public class MainActivity extends AppCompatActivity
                     progessBar.setVisibility(View.GONE);
                     progressBarText.setVisibility(View.GONE);
                     helpImage.setImageResource(R.drawable.error_icon);
+                    helpImage.setVisibility(View.VISIBLE);
                     helpText.setText("Location permission required!");
                     helpText.setVisibility(View.VISIBLE);
                     helpText.setTextColor(Color.BLACK);
@@ -731,9 +729,9 @@ public class MainActivity extends AppCompatActivity
             execute_it();
         } else if (id == R.id.nav_list) {
             openList();
-    //    } else if (id == R.id.nav_slideshow) {
+            //    } else if (id == R.id.nav_slideshow) {
 
-      //  } else if (id == R.id.nav_manage) {
+            //  } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
