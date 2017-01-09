@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity
     private boolean vibratePref;
     private String phonePref;
     private boolean engine_running = false;
+    private NotificationManager mNotificationManager;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -171,6 +172,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "Create");
+
+        mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -305,6 +309,7 @@ public class MainActivity extends AppCompatActivity
             timer.cancel();
             Toast.makeText(this, "Alert Engine Stopped!", Toast.LENGTH_SHORT).show();
         }
+        mNotificationManager.cancel(1);
         super.onDestroy();
     }
 
@@ -652,8 +657,6 @@ public class MainActivity extends AppCompatActivity
         mBuilder.setContentText(mAddressOutput);
         mBuilder.setVisibility(VISIBILITY_PUBLIC);
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
 
