@@ -49,12 +49,18 @@ public class PlaceAdapter extends ArrayAdapter<Place> {
         // the default TextView.
         highwayTextView.setText(currentPlace.getHighwayNumber());
 
-        TextView gmapTextView = (TextView) listItemView.findViewById(R.id.gmap_text_view);
+        // Find the TextView in the list_item.xml layout with the ID default_text_view.
+        TextView fatalityTextView = (TextView) listItemView.findViewById(R.id.fatalities2016_text_view);
         // Get the default translation from the currentPlace object and set this text on
         // the default TextView.
-        gmapTextView.setText(currentPlace.getLatitude()+ "/" + currentPlace.getLongitude());
+        fatalityTextView.setText(currentPlace.getFatalties2016()+ " fatalities till July 2016");
 
-        // Return the whole list item layout (containing 2 TextViews) so that it can be shown in
+//        TextView gmapTextView = (TextView) listItemView.findViewById(R.id.gmap_text_view);
+//        // Get the default translation from the currentPlace object and set this text on
+//        // the default TextView.
+//        gmapTextView.setText(currentPlace.getLatitude()+ "/" + currentPlace.getLongitude());
+
+        // Return the whole list item layout (containing 3 TextViews) so that it can be shown in
         // the ListView.
         return listItemView;
     }

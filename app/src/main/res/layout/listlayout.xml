@@ -7,26 +7,35 @@
 
     <TextView
         android:id="@+id/location_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:padding="8dp"
         tools:text="location" />
 
     <TextView
         android:id="@+id/highway_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:padding="8dp"
         tools:text="highway" />
 
 
-
     <TextView
-        android:id="@+id/gmap_text_view"
-        android:layout_width="wrap_content"
+        android:id="@+id/fatalities2016_text_view"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:padding="8dp"
-        tools:text="LAT/LONG" />
+        tools:text="fatalities" />
+
+    <!--<TextView-->
+    <!--android:id="@+id/gmap_text_view"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:padding="8dp"-->
+    <!--tools:text="LAT/LONG" />-->
 
 
 </LinearLayout>
