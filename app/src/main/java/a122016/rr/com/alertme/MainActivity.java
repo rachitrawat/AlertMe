@@ -307,9 +307,8 @@ public class MainActivity extends AppCompatActivity
         }
         if (engine_running) {
             timer.cancel();
-            Toast.makeText(this, "Alert Engine Stopped!", Toast.LENGTH_SHORT).show();
         }
-        mNotificationManager.cancel(1);
+        mNotificationManager.cancelAll();
         super.onDestroy();
     }
 
@@ -341,6 +340,7 @@ public class MainActivity extends AppCompatActivity
     private void stopAlertEngine() {
         engine_running = false;
         timer.cancel();
+        mNotificationManager.cancel(1);
         fab.setImageResource(R.drawable.ic_media_play);
         helpText.setText("Press play button to start.");
         helpText.setTextColor(Color.parseColor("#3949AB"));
@@ -453,8 +453,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        if (engine_running)
-            Toast.makeText(this, "App wil run in background", Toast.LENGTH_SHORT).show();
         super.onStop();
     }
 
@@ -653,7 +651,6 @@ public class MainActivity extends AppCompatActivity
 //                );
 //
 //        mBuilder.setContentIntent(resultPendingIntent);
-        mBuilder.setOngoing(true);
         mBuilder.setContentText(mAddressOutput);
         mBuilder.setVisibility(VISIBILITY_PUBLIC);
 
