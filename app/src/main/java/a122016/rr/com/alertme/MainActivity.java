@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity
     private boolean soundPref;
     private boolean vibratePref;
     private String phonePref;
+    private boolean engine_running = false;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity
      * fetching an address.
      */
     protected void startIntentService() {
-        //  Log.i(LOG_TAG, "intent service started");
+        Log.i(LOG_TAG, "Fetch address");
 
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -169,6 +170,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.i(LOG_TAG, "Create");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -212,6 +215,7 @@ public class MainActivity extends AppCompatActivity
         speedText = (TextView) findViewById(R.id.speed_text_view);
         speedText.setVisibility(View.INVISIBLE);
         helpImage = (ImageView) findViewById(R.id.help_image);
+        helpImage.setVisibility(View.INVISIBLE);
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -282,6 +286,7 @@ public class MainActivity extends AppCompatActivity
                 progessBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
                 helpImage.setImageResource(R.drawable.error_icon);
+                helpImage.setVisibility(View.VISIBLE);
                 helpText.setText("Internet Connection Required!");
                 helpText.setVisibility(View.VISIBLE);
                 helpText.setTextColor(Color.BLACK);
@@ -290,7 +295,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.i(LOG_TAG, "Destroy");
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+        if (engine_running) {
+            timer.cancel();
+            Toast.makeText(this, "Alert Engine Stopped!", Toast.LENGTH_SHORT).show();
+        }
+        super.onDestroy();
+    }
+
     private void startAlertEngine() {
+        engine_running = true;
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -315,6 +334,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void stopAlertEngine() {
+        engine_running = false;
         timer.cancel();
         fab.setImageResource(R.drawable.ic_media_play);
         helpText.setText("Press play button to start.");
@@ -428,9 +448,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        if (mGoogleApiClient.isConnected()) {
-            //  mGoogleApiClient.disconnect();
-        }
+        if (engine_running)
+            Toast.makeText(this, "App wil run in background", Toast.LENGTH_SHORT).show();
         super.onStop();
     }
 
@@ -501,8 +520,10 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
         arrayList = data;
         fab.setVisibility(View.VISIBLE);
-        helpText.setText("Press play button to start.");
-        helpText.setTextColor(Color.parseColor("#3949AB"));
+        if (!engine_running) {
+            helpText.setText("Press play button to start.");
+            helpText.setTextColor(Color.parseColor("#3949AB"));
+        }
         helpText.setVisibility(View.VISIBLE);
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
@@ -517,7 +538,7 @@ public class MainActivity extends AppCompatActivity
         int c = 0;
 
         if (mCurrentLocation != null) {
-            //   Log.e(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
+            //   Log.i(LOG_TAG, "Current Location: " + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
             for (Place temp : arrayList) {
 
                 float[] result = new float[1];
@@ -525,7 +546,7 @@ public class MainActivity extends AppCompatActivity
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getLatitude(), temp.getLongitude(), result);
 
-                    //Log.e(LOG_TAG, "result: " + result[0]);
+                    //Log.i(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
                         helpText.setText("You are in an Accident Prone Area.");
