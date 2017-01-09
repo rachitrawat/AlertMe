@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_CHECK_SETTINGS = 1;
 
     public static ArrayList<Place> arrayList;
-    private static LocationRequest mLocationRequest;
     private static int ALERT_ON = 0;
 
     /**
@@ -225,9 +224,6 @@ public class MainActivity extends AppCompatActivity
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-
-        //create location request object
-        mLocationRequest = createLocationRequest();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         namePref = sharedPrefs.getString(
@@ -385,7 +381,7 @@ public class MainActivity extends AppCompatActivity
 
             // create a LocationSettingsRequest.Builder
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(mLocationRequest);
+                    .addLocationRequest(createLocationRequest());
 
             //check whether the current location settings are satisfied
             final PendingResult<LocationSettingsResult> result =
@@ -470,7 +466,7 @@ public class MainActivity extends AppCompatActivity
     protected void startLocationUpdates() {
         //  we already have permission
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
+                mGoogleApiClient, createLocationRequest(), this);
     }
 
     @Override
