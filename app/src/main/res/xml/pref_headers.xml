@@ -12,9 +12,9 @@
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
-    <header
-        android:fragment="a122016.rr.com.alertme.SettingsActivity$ProfilePreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
-        android:title="About" />
+    <!--<header-->
+        <!--android:fragment="a122016.rr.com.alertme.SettingsActivity$ProfilePreferenceFragment"-->
+        <!--android:icon="@drawable/ic_info_black_24dp"-->
+        <!--android:title="About" />-->
 
 </preference-headers>
