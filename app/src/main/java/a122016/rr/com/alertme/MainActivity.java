@@ -731,9 +731,9 @@ public class MainActivity extends AppCompatActivity
             execute_it();
         } else if (id == R.id.nav_list) {
             openList();
-        } else if (id == R.id.nav_slideshow) {
+    //    } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
+      //  } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 
