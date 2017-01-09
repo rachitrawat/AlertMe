@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity
     private String phonePref;
     private boolean engine_running = false;
     private NotificationManager mNotificationManager;
+    private DrawerLayout drawer;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -190,11 +191,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -530,6 +533,9 @@ public class MainActivity extends AppCompatActivity
         helpText.setVisibility(View.VISIBLE);
         progessBar.setVisibility(View.GONE);
         progressBarText.setVisibility(View.GONE);
+
+        //allow opening navigation drawer
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     public void afterLoadFinished() {
@@ -690,7 +696,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
