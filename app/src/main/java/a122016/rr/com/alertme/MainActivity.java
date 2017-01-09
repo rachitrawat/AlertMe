@@ -616,8 +616,6 @@ public class MainActivity extends AppCompatActivity
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.ic_warning_white_24dp)
                             .setContentTitle("Accident Prone Area")
-                            .setContentText(mAddressOutput)
-                            .setVisibility(VISIBILITY_PUBLIC)
                             .setPriority(PRIORITY_MAX);
 
             if (vibratePref)
@@ -628,9 +626,7 @@ public class MainActivity extends AppCompatActivity
             mBuilder =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.ic_beenhere_white_24dp)
-                            .setContentTitle("Safe Area")
-                            .setContentText(mAddressOutput)
-                            .setVisibility(VISIBILITY_PUBLIC);
+                            .setContentTitle("Safe Area");
         }
 
 //        // Creates an explicit intent for an Activity in your app
@@ -652,6 +648,10 @@ public class MainActivity extends AppCompatActivity
 //                );
 //
 //        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setOngoing(true);
+        mBuilder.setContentText(mAddressOutput);
+        mBuilder.setVisibility(VISIBILITY_PUBLIC);
+
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
