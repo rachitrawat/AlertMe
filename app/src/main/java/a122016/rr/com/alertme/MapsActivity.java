@@ -1,8 +1,10 @@
 package a122016.rr.com.alertme;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,12 +51,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        ArrayList<Place> arrayList = MainActivity.getArrayList();
+        Intent mIntent = getIntent();
+        int intValue = mIntent.getIntExtra("intVariableName", 0);
 
-        for (Place place : arrayList) {
-            if (place.getLatitude() != 0) {
-                LatLng latLong = new LatLng(place.getLatitude(), place.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(latLong).title(place.getPlaceOfAccident()));
+        if (intValue == 1) {
+            ArrayList<Place> arrayList = MainActivity.getArrayList();
+
+            for (Place place : arrayList) {
+                if (place.getLatitude() != 0) {
+                    LatLng latLong = new LatLng(place.getLatitude(), place.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(latLong).title(place.getPlaceOfAccident()));
+                }
+            }
+        } else {
+            ArrayList<PoliceStation> arrayList = MainActivity.getArrayListPS();
+
+            for (PoliceStation place : arrayList) {
+                if (place.getmLatitude() != 0) {
+                    LatLng latLong = new LatLng(place.getmLatitude(), place.getmLongitude());
+                    mMap.addMarker(new MarkerOptions().position(latLong).title(place.getmName()));
+                }
             }
         }
 

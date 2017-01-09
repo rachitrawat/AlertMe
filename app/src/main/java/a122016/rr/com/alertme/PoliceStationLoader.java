@@ -18,22 +18,19 @@ package a122016.rr.com.alertme;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
-
-import com.google.android.gms.location.places.Places;
 
 import java.util.ArrayList;
 
 /**
- * Loads a Places by using an AsyncTask to perform the
+ * Loads a PoliceStations by using an AsyncTask to perform the
  * network request to the given URL.
  */
-public class PlacesLoader extends AsyncTaskLoader<ArrayList<Place>> {
+public class PoliceStationLoader extends AsyncTaskLoader<ArrayList<PoliceStation>> {
 
     /**
      * Tag for log messages
      */
-    private static final String LOG_TAG = PlacesLoader.class.getName();
+    private static final String LOG_TAG = PoliceStationLoader.class.getName();
 
     /**
      * Query URL
@@ -41,11 +38,11 @@ public class PlacesLoader extends AsyncTaskLoader<ArrayList<Place>> {
     private String mUrl;
 
     /**
-     * Constructs a new {@link PlacesLoader}.
+     * Constructs a new {@link PoliceStationLoader}.
      *  @param context of the activity
      * @param url     to load data from
      */
-    public PlacesLoader(Context context, String url) {
+    public PoliceStationLoader(Context context, String url) {
         super(context);
         mUrl = url;
     }
@@ -59,13 +56,13 @@ public class PlacesLoader extends AsyncTaskLoader<ArrayList<Place>> {
      * This is on a background thread.
      */
     @Override
-    public ArrayList<Place> loadInBackground() {
+    public ArrayList<PoliceStation> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
 
-        // Perform the network request, parse the response, and get array list of places
-        ArrayList<Place> placesList = QueryUtils.fetchPlacesData(mUrl);
-        return placesList;
+        // Perform the network request, parse the response, and get array list of PoliceStations
+        ArrayList<PoliceStation> PoliceStationsList = QueryUtilsPoliceStation.fetchPoliceStationsData(mUrl);
+        return PoliceStationsList;
     }
 }

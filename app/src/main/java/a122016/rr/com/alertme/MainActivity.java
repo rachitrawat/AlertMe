@@ -1,8 +1,8 @@
 package a122016.rr.com.alertme;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -29,7 +29,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,7 +41,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -61,25 +59,32 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.R.attr.data;
 import static android.app.Notification.PRIORITY_MAX;
 import static android.app.Notification.VISIBILITY_PUBLIC;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+
+    private static final String LOG_TAG = MainActivity.class.getName();
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
+
     private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/location_data.json";
-    private static final String LOG_TAG = MainActivity.class.getName();
+    private static final String POLICE_STATION_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/police_station_data.json";
+
     /**
      * Constant value for the places loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
      */
     private static final int PLACES_LOADER_ID = 1;
+    private static final int POLICE_STATION_LOADER_ID = 2;
+
     private static final int REQUEST_CHECK_SETTINGS = 1;
 
     public static ArrayList<Place> arrayList;
+    public static ArrayList<PoliceStation> arrayListPS;
+
     private static int ALERT_ON = 0;
 
     /**
@@ -129,9 +134,62 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
 
+    private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
+            = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
+        @Override
+        public Loader<ArrayList<Place>> onCreateLoader(int id, Bundle args) {
+            return new PlacesLoader(getApplicationContext(), PLACES_REQUEST_URL);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
+            arrayList = data;
+            fab.setVisibility(View.VISIBLE);
+            if (!engine_running) {
+                helpText.setText("Press play button to start.");
+                helpText.setTextColor(Color.parseColor("#3949AB"));
+            }
+            helpText.setVisibility(View.VISIBLE);
+            progessBar.setVisibility(View.GONE);
+            progressBarText.setVisibility(View.GONE);
+
+            //allow opening navigation drawer
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            toggle.syncState();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<ArrayList<Place>> loader) {
+
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<ArrayList<PoliceStation>> policeStationLoaderListener
+            = new LoaderManager.LoaderCallbacks<ArrayList<PoliceStation>>() {
+        @Override
+        public Loader<ArrayList<PoliceStation>> onCreateLoader(int id, Bundle args) {
+            return new PoliceStationLoader(getApplicationContext(), POLICE_STATION_REQUEST_URL);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<ArrayList<PoliceStation>> loader, ArrayList<PoliceStation> data) {
+            arrayListPS = data;
+        }
+
+        @Override
+        public void onLoaderReset(Loader<ArrayList<PoliceStation>> loader) {
+
+        }
+    };
+
     public static ArrayList<Place> getArrayList() {
 
         return arrayList;
+    }
+
+    public static ArrayList<PoliceStation> getArrayListPS() {
+
+        return arrayListPS;
     }
 
     /**
@@ -279,7 +337,9 @@ public class MainActivity extends AppCompatActivity
                 // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
                 // because this activity implements the LoaderCallbacks interface).
 
-                loaderManager.initLoader(PLACES_LOADER_ID, null, this);
+                loaderManager.initLoader(PLACES_LOADER_ID, null, placeLoaderListener);
+                loaderManager.initLoader(POLICE_STATION_LOADER_ID, null, policeStationLoaderListener);
+
 
                 progessBar.setVisibility(View.VISIBLE);
                 progressBarText.setVisibility(View.VISIBLE);
@@ -357,9 +417,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void execute_it() {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("intVariableName", 1);
+        startActivity(i);
     }
+
+    private void execute_itPS() {
+        Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("intVariableName", 2);
+        startActivity(i);
+    }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -510,28 +578,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public Loader<ArrayList<Place>> onCreateLoader(int id, Bundle args) {
-        return new PlacesLoader(this, PLACES_REQUEST_URL);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
-        arrayList = data;
-        fab.setVisibility(View.VISIBLE);
-        if (!engine_running) {
-            helpText.setText("Press play button to start.");
-            helpText.setTextColor(Color.parseColor("#3949AB"));
-        }
-        helpText.setVisibility(View.VISIBLE);
-        progessBar.setVisibility(View.GONE);
-        progressBarText.setVisibility(View.GONE);
-
-        //allow opening navigation drawer
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        toggle.syncState();
-    }
-
     public void afterLoadFinished() {
 
         if (mCurrentLocation != null && Geocoder.isPresent()) {
@@ -660,13 +706,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onLoaderReset(Loader<ArrayList<Place>> loader) {
-
-    }
-
     private void openList() {
         Intent i = new Intent(this, ListActivity.class);
+        i.putExtra("intVariableName", 1);
+        startActivity(i);
+    }
+
+    private void openListPS() {
+        Intent i = new Intent(this, ListActivity.class);
+        i.putExtra("intVariableName", 2);
         startActivity(i);
     }
 
@@ -726,6 +774,14 @@ public class MainActivity extends AppCompatActivity
             execute_it();
         } else if (id == R.id.nav_list) {
             openList();
+
+        } else if (id == R.id.nav_list2) {
+            openListPS();
+
+        } else if (id == R.id.nav_mapPS) {
+            execute_itPS();
+
+
             //    } else if (id == R.id.nav_slideshow) {
 
             //  } else if (id == R.id.nav_manage) {
