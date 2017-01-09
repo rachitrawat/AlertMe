@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity
     private boolean engine_running = false;
     private NotificationManager mNotificationManager;
     private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
 
     public static ArrayList<Place> getArrayList() {
 
@@ -193,11 +194,9 @@ public class MainActivity extends AppCompatActivity
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -536,6 +535,7 @@ public class MainActivity extends AppCompatActivity
 
         //allow opening navigation drawer
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        toggle.syncState();
     }
 
     public void afterLoadFinished() {
