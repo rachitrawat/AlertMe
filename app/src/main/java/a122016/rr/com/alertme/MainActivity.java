@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LoaderManager.LoaderCallbacks<ArrayList<Place>>, LocationListener {
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 1;
-    private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/data.json";
+    private static final String PLACES_REQUEST_URL = "https://raw.githubusercontent.com/rachitrawat/AlertMe/master/app/src/debug/res/location_data.json";
     private static final String LOG_TAG = MainActivity.class.getName();
     /**
      * Constant value for the places loader ID. We can choose any integer.
