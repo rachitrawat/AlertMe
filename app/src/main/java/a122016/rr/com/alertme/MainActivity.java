@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
             }
-        }, 0, 15000);
+        }, 0, 12000);
         fab.setImageResource(R.drawable.ic_media_pause);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -594,8 +594,9 @@ public class MainActivity extends AppCompatActivity
             }
 
         } else {
+            helpImage.setVisibility(View.VISIBLE);
             helpImage.setImageResource(R.drawable.error_icon);
-            helpText.setText("Problem getting your location!");
+            helpText.setText("Problem getting your location! Try waiting for sometime.");
             helpText.setVisibility(View.VISIBLE);
             helpText.setTextColor(Color.BLACK);
         }
