@@ -596,7 +596,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             helpImage.setVisibility(View.VISIBLE);
             helpImage.setImageResource(R.drawable.error_icon);
-            helpText.setText("Problem getting your location! Try waiting for sometime.");
+            helpText.setText("Problem getting your location! Check location settings or wait for sometime.");
             helpText.setVisibility(View.VISIBLE);
             helpText.setTextColor(Color.BLACK);
         }
