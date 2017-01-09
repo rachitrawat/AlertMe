@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
     private TextView nameTextView;
     private TextView phoneTextView;
     private ProgressBar progessBar;
-    private String LOCATION_KEY;
+    private String LOCATION_KEY = "Location_Key";
     private TextView helpText;
     private TextView areaText;
     private TextView speedText;
