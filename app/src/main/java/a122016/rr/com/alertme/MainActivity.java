@@ -1,8 +1,6 @@
 package a122016.rr.com.alertme;
 
-import android.*;
 import android.Manifest;
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -36,6 +34,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,7 +63,6 @@ import java.util.TimerTask;
 
 import static android.app.Notification.PRIORITY_MAX;
 import static android.app.Notification.VISIBILITY_PUBLIC;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 
 public class MainActivity extends AppCompatActivity
@@ -87,6 +85,7 @@ public class MainActivity extends AppCompatActivity
     private static final int POLICE_STATION_LOADER_ID = 2;
 
     private static final int REQUEST_CHECK_SETTINGS = 1;
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 3;
 
     public static ArrayList<Place> arrayList;
     public static ArrayList<PoliceStation> arrayListPS;
@@ -119,6 +118,7 @@ public class MainActivity extends AppCompatActivity
     private TextView speedText;
     private ImageView helpImage;
     private ImageView phoneImage;
+    private ImageView smsImage;
     private TextView nearestPSTextView;
     private Timer timer;
     private Uri notification;
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     private NotificationManager mNotificationManager;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
+    private SmsManager smsManager;
 
     private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
             = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
@@ -294,6 +295,8 @@ public class MainActivity extends AppCompatActivity
         nearestPSTextView.setVisibility(View.INVISIBLE);
         phoneImage = (ImageView) findViewById(R.id.call_nearest_ps_text_view);
         phoneImage.setVisibility(View.INVISIBLE);
+        smsImage = (ImageView) findViewById(R.id.sms_nearest_ps_text_view);
+        smsImage.setVisibility(View.INVISIBLE);
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -422,6 +425,7 @@ public class MainActivity extends AppCompatActivity
         speedText.setVisibility(View.INVISIBLE);
         nearestPSTextView.setVisibility(View.INVISIBLE);
         phoneImage.setVisibility(View.INVISIBLE);
+        smsImage.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -612,7 +616,7 @@ public class MainActivity extends AppCompatActivity
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getLatitude(), temp.getLongitude(), result);
 
-                //    Log.i(LOG_TAG, "result: " + result[0]);
+                    //    Log.i(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
                         ALERT_ON = 1;
@@ -628,11 +632,11 @@ public class MainActivity extends AppCompatActivity
             }
 
             nearestPS = arrayListPS.get(0);
-        //    Log.e(LOG_TAG, "nearesPS init: " + nearestPS.getmName());
+            //    Log.e(LOG_TAG, "nearesPS init: " + nearestPS.getmName());
             float[] minresult = new float[1];
             Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                     nearestPS.getmLatitude(), nearestPS.getmLongitude(), minresult);
-      //      Log.e(LOG_TAG, "minresult init: " + minresult[0]);
+            //      Log.e(LOG_TAG, "minresult init: " + minresult[0]);
             float[] result = new float[1];
 
             for (PoliceStation temp : arrayListPS) {
@@ -640,15 +644,15 @@ public class MainActivity extends AppCompatActivity
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getmLatitude(), temp.getmLongitude(), result);
                 }
-          //      Log.e(LOG_TAG, "result: " + (int) result[0] / 1000 + " minresult: " + (int) minresult[0] / 1000);
+                //      Log.e(LOG_TAG, "result: " + (int) result[0] / 1000 + " minresult: " + (int) minresult[0] / 1000);
                 if (result[0] < minresult[0]) {
-         //           Log.e(LOG_TAG, "true");
+                    //           Log.e(LOG_TAG, "true");
                     minresult[0] = result[0];
                     nearestPS = temp;
                 }
             }
 
-     //       Log.e(LOG_TAG, "Nearest: " + nearestPS.getmName());
+            //       Log.e(LOG_TAG, "Nearest: " + nearestPS.getmName());
 
             if (ALERT_ON == 1) {
                 helpText.setText("You are in an Accident Prone Area.");
@@ -673,6 +677,7 @@ public class MainActivity extends AppCompatActivity
             nearestPSTextView.setText("Nearest Police Station: " + nearestPS.getmName() + " " + (int) minresult[0] / 1000 + " " + "KMs");
             nearestPSTextView.setVisibility(View.VISIBLE);
             phoneImage.setVisibility(View.VISIBLE);
+            smsImage.setVisibility(View.VISIBLE);
             helpImage.setVisibility(View.VISIBLE);
             areaText.setVisibility(View.VISIBLE);
             helpText.setVisibility(View.VISIBLE);
@@ -849,9 +854,24 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CALL_PHONE},
                     MY_PERMISSIONS_REQUEST_MAKE_CALL);
-        } else
+        } else {
             startActivity(intent);
+            Toast.makeText(this, "Calling nearest police station...", Toast.LENGTH_SHORT).show();
+        }
     }
+    public void make_sms(View view) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    MY_PERMISSIONS_REQUEST_SEND_SMS);
+        } else {
+            smsManager = SmsManager.getDefault();
+            String message = "***Help Required!***\nName: " + namePref + "\nNumber: " + phonePref + "\nLocation: " + mAddressOutput + "\nLatitude: " + mCurrentLocation.getLatitude() + "\nLongitude: " + mCurrentLocation.getLongitude();
+            smsManager.sendTextMessage(nearestPS.getmNumber(), null, message, null, null);
+            Toast.makeText(this, "Requesting help from nearest police station...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     /**
      * Receiver for data sent from FetchAddressIntentService.

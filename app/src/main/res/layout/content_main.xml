@@ -56,22 +56,39 @@
         android:textStyle="bold"
         tools:hint="Nearest PS" />
 
-    <ImageView
-        android:id="@+id/call_nearest_ps_text_view"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/nearest_ps_text_view"
         android:layout_centerInParent="true"
-        android:onClick="make_call"
-        android:paddingLeft="8dp"
-        android:paddingTop="8dp"
-        android:src="@drawable/ic_call_black_24dp" />
+        android:paddingTop="8dp">
+
+
+        <ImageView
+            android:id="@+id/call_nearest_ps_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="make_call"
+            android:padding="8dp"
+            android:src="@drawable/ic_call_black_24dp" />
+
+        <ImageView
+            android:id="@+id/sms_nearest_ps_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="make_sms"
+            android:padding="8dp"
+            android:src="@drawable/ic_message_black_24dp" />
+
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/help_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/alert_text_view" />
+
 
     <ProgressBar
         android:id="@+id/progress_bar"
