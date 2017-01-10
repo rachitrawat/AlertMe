@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setFastestInterval(8000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return mLocationRequest;
     }
@@ -598,22 +598,9 @@ public class MainActivity extends AppCompatActivity
                     //Log.i(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
-                        helpText.setText("You are in an Accident Prone Area.");
-                        helpText.setTextColor(Color.RED);
-                        helpImage.setImageResource(R.drawable.alert_icon);
-                        areaText.setText("Location: " + mAddressOutput);
-                        speedText.setText("Speed: " + mCurrentLocation.getSpeed());
-                        if (notificationPref)
-                            buildNotification(true);
                         ALERT_ON = 1;
                         break;
                     } else {
-                        helpImage.setImageResource(R.drawable.safe_icon);
-                        helpText.setText("You are in a Safe Area.");
-                        helpText.setTextColor(Color.parseColor("#388E3C"));
-                        areaText.setText("Location: " + mAddressOutput);
-                        if (notificationPref)
-                            buildNotification(false);
                         if (c == arrayList.size() - 1) {
                             ALERT_ON = 0;
                         }
@@ -623,11 +610,26 @@ public class MainActivity extends AppCompatActivity
                 c++;
             }
 
+            if (ALERT_ON == 1) {
+                helpText.setText("You are in an Accident Prone Area.");
+                helpText.setTextColor(Color.RED);
+                helpImage.setImageResource(R.drawable.alert_icon);
+                if (notificationPref)
+                    buildNotification(true);
+            } else {
+                helpImage.setImageResource(R.drawable.safe_icon);
+                helpText.setText("You are in a Safe Area.");
+                helpText.setTextColor(Color.parseColor("#388E3C"));
+                if (notificationPref)
+                    buildNotification(false);
+            }
+
             if (mCurrentLocation.getSpeed() * 18 / 5 >= 45) {
                 speedText.setTextColor(Color.RED);
             } else
                 speedText.setTextColor(Color.parseColor("#388E3C"));
 
+            areaText.setText("Location: " + mAddressOutput);
             helpImage.setVisibility(View.VISIBLE);
             areaText.setVisibility(View.VISIBLE);
             helpText.setVisibility(View.VISIBLE);
