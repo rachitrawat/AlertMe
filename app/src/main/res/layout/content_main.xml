@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/alert_text_view"
         android:layout_centerInParent="true"
-        android:padding="16dp"
+        android:paddingTop="8dp"
         android:textSize="15sp"
         android:textStyle="bold"
         tools:hint="area" />
@@ -40,10 +40,32 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/area_text_view"
         android:layout_centerInParent="true"
-        android:padding="16dp"
+        android:paddingTop="8dp"
         android:textSize="15sp"
         android:textStyle="bold"
         tools:hint="Speed" />
+
+    <TextView
+        android:id="@+id/nearest_ps_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/speed_text_view"
+        android:layout_centerInParent="true"
+        android:paddingTop="8dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:hint="Nearest PS" />
+
+    <ImageView
+        android:id="@+id/call_nearest_ps_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nearest_ps_text_view"
+        android:layout_centerInParent="true"
+        android:onClick="make_call"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:src="@drawable/ic_call_black_24dp" />
 
     <ImageView
         android:id="@+id/help_image"
