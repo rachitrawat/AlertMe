@@ -612,7 +612,7 @@ public class MainActivity extends AppCompatActivity
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getLatitude(), temp.getLongitude(), result);
 
-                    Log.i(LOG_TAG, "result: " + result[0]);
+                //    Log.i(LOG_TAG, "result: " + result[0]);
 
                     if (result[0] <= 1000) {
                         ALERT_ON = 1;
@@ -628,11 +628,11 @@ public class MainActivity extends AppCompatActivity
             }
 
             nearestPS = arrayListPS.get(0);
-            Log.e(LOG_TAG, "nearesPS init: " + nearestPS.getmName());
+        //    Log.e(LOG_TAG, "nearesPS init: " + nearestPS.getmName());
             float[] minresult = new float[1];
             Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                     nearestPS.getmLatitude(), nearestPS.getmLongitude(), minresult);
-            Log.e(LOG_TAG, "minresult init: " + minresult[0]);
+      //      Log.e(LOG_TAG, "minresult init: " + minresult[0]);
             float[] result = new float[1];
 
             for (PoliceStation temp : arrayListPS) {
@@ -640,15 +640,15 @@ public class MainActivity extends AppCompatActivity
                     Location.distanceBetween(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),
                             temp.getmLatitude(), temp.getmLongitude(), result);
                 }
-                Log.e(LOG_TAG, "result: " + (int) result[0] / 1000 + " minresult: " + (int) minresult[0] / 1000);
+          //      Log.e(LOG_TAG, "result: " + (int) result[0] / 1000 + " minresult: " + (int) minresult[0] / 1000);
                 if (result[0] < minresult[0]) {
-                    Log.e(LOG_TAG, "true");
+         //           Log.e(LOG_TAG, "true");
                     minresult[0] = result[0];
                     nearestPS = temp;
                 }
             }
 
-            Log.e(LOG_TAG, "Nearest: " + nearestPS.getmName());
+     //       Log.e(LOG_TAG, "Nearest: " + nearestPS.getmName());
 
             if (ALERT_ON == 1) {
                 helpText.setText("You are in an Accident Prone Area.");
