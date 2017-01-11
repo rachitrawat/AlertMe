@@ -1,12 +1,9 @@
 package a122016.rr.com.alertme;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,11 +13,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-
-import static a122016.rr.com.alertme.MainActivity.arrayList;
-import static android.R.attr.data;
-import static android.os.Build.VERSION_CODES.N;
-import static com.google.android.gms.maps.CameraUpdateFactory.zoomIn;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
