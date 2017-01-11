@@ -825,16 +825,20 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_mapPS) {
             execute_itPS();
 
-
             //    } else if (id == R.id.nav_slideshow) {
 
             //  } else if (id == R.id.nav_manage) {
-
+//
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            String message = "Name: " + namePref + "\nNumber: " + phonePref + "\nLocation: " + mAddressOutput + "\nLatitude: " + mCurrentLocation.getLatitude() + "\nLongitude: " + mCurrentLocation.getLongitude();
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
         }
+//        } else if (id == R.id.nav_send) {
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
