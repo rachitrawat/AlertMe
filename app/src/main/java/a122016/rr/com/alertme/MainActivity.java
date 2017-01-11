@@ -2,7 +2,6 @@ package a122016.rr.com.alertme;
 
 import android.Manifest;
 import android.app.LoaderManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -46,7 +45,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -128,7 +126,6 @@ public class MainActivity extends AppCompatActivity
     private Uri notification;
     private Ringtone r;
     private Vibrator v;
-    private boolean doubleBackToExitPressedOnce = false;
     private NotificationCompat.Builder mBuilder;
     private FloatingActionButton fab;
 
