@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.Loader;
@@ -34,6 +35,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
@@ -146,7 +148,6 @@ public class MainActivity extends AppCompatActivity
     private NotificationManager mNotificationManager;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    private SmsManager smsManager;
 
     private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
             = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
@@ -835,15 +836,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void make_call(View view) {
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + nearestPS.getmNumber()));
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CALL_PHONE},
                     MY_PERMISSIONS_REQUEST_MAKE_CALL);
         } else {
-            startActivity(intent);
-            Toast.makeText(this, "Calling nearest police station...", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(this)
+                    .setTitle("Confirm")
+                    .setMessage("Call " + nearestPS.getmName() + "?")
+                    .setIcon(R.drawable.ic_info_black_24dp)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Intent intent = new Intent(Intent.ACTION_CALL);
+                            intent.setData(Uri.parse("tel:" + nearestPS.getmNumber()));
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
         }
     }
 
@@ -853,13 +863,20 @@ public class MainActivity extends AppCompatActivity
                     new String[]{Manifest.permission.SEND_SMS},
                     MY_PERMISSIONS_REQUEST_SEND_SMS);
         } else {
-            smsManager = SmsManager.getDefault();
-            String message = "***Help Required!***\nName: " + namePref + "\nNumber: " + phonePref + "\nLocation: " + mAddressOutput + "\nLatitude: " + mCurrentLocation.getLatitude() + "\nLongitude: " + mCurrentLocation.getLongitude();
-            smsManager.sendTextMessage(nearestPS.getmNumber(), null, message, null, null);
-            Toast.makeText(this, "Requesting help from nearest police station...", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(this)
+                    .setTitle("Confirm")
+                    .setMessage("Request help via sms from " + nearestPS.getmName() + "?")
+                    .setIcon(R.drawable.ic_info_black_24dp)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            SmsManager smsManager = SmsManager.getDefault();
+                            String message = "***Help Required!***\nName: " + namePref + "\nNumber: " + phonePref + "\nLocation: " + mAddressOutput + "\nLatitude: " + mCurrentLocation.getLatitude() + "\nLongitude: " + mCurrentLocation.getLongitude();
+                            smsManager.sendTextMessage(nearestPS.getmNumber(), null, message, null, null);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
         }
     }
-
 
     /**
      * Receiver for data sent from FetchAddressIntentService.
