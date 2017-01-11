@@ -743,6 +743,7 @@ public class MainActivity extends AppCompatActivity
         PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), (int) System.currentTimeMillis(), intent, 0);
         mBuilder.setContentIntent(pIntent);
         mBuilder.setContentText(mAddressOutput);
+        mBuilder.setOngoing(true);
         mBuilder.setVisibility(VISIBILITY_PUBLIC);
 
         // mId allows you to update the notification later on.
