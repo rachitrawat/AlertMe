@@ -24,10 +24,11 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-        android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
