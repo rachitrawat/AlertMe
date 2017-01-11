@@ -158,24 +158,33 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onLoadFinished(Loader<ArrayList<Place>> loader, ArrayList<Place> data) {
-            arrayList = data;
-            fab.setVisibility(View.VISIBLE);
-            if (!engine_running) {
-                helpText.setText("Press play button to start.");
-                helpText.setTextColor(Color.parseColor("#3949AB"));
-            }
-            helpText.setVisibility(View.VISIBLE);
-            progessBar.setVisibility(View.GONE);
-            progressBarText.setVisibility(View.GONE);
+            if (data != null) {
+                arrayList = data;
+                fab.setVisibility(View.VISIBLE);
+                if (!engine_running) {
+                    helpText.setText("Press play button to start.");
+                    helpText.setTextColor(Color.parseColor("#3949AB"));
+                }
+                helpText.setVisibility(View.VISIBLE);
+                progessBar.setVisibility(View.GONE);
+                progressBarText.setVisibility(View.GONE);
 
-            //allow opening navigation drawer
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            toggle.syncState();
+                //allow opening navigation drawer
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                toggle.syncState();
+            } else {
+                progessBar.setVisibility(View.GONE);
+                progressBarText.setVisibility(View.GONE);
+                helpImage.setImageResource(R.drawable.error_icon);
+                helpImage.setVisibility(View.VISIBLE);
+                helpText.setText("Problem fetching data from server!");
+                helpText.setVisibility(View.VISIBLE);
+                helpText.setTextColor(Color.BLACK);
+            }
         }
 
         @Override
         public void onLoaderReset(Loader<ArrayList<Place>> loader) {
-
         }
     };
 
@@ -188,7 +197,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onLoadFinished(Loader<ArrayList<PoliceStation>> loader, ArrayList<PoliceStation> data) {
-            arrayListPS = data;
+            if (data != null) {
+                arrayListPS = data;
+            }
         }
 
         @Override
@@ -360,8 +371,6 @@ public class MainActivity extends AppCompatActivity
 
                 loaderManager.initLoader(PLACES_LOADER_ID, null, placeLoaderListener);
                 loaderManager.initLoader(POLICE_STATION_LOADER_ID, null, policeStationLoaderListener);
-
-
                 progessBar.setVisibility(View.VISIBLE);
                 progressBarText.setVisibility(View.VISIBLE);
 

@@ -72,7 +72,6 @@ public final class QueryUtils {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
 
-
         // Extract relevant fields from the JSON response and create a {@link Places} object
         ArrayList<Place> placesList = extractFeatureFromJson(jsonResponse);
 
