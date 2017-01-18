@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private TextToSpeech t1;
+    private static String accidentProneAreaJSON;
 
     private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
             = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
@@ -643,6 +644,7 @@ public class MainActivity extends AppCompatActivity
 
                     if (result[0] <= 1000) {
                         ALERT_ON = 1;
+                        accidentProneAreaJSON = temp.getPlaceOfAccident();
                         break;
                     } else {
                         if (c == arrayList.size() - 1) {
@@ -681,10 +683,12 @@ public class MainActivity extends AppCompatActivity
                 helpText.setText("You are in an Accident Prone Area.");
                 helpText.setTextColor(Color.RED);
                 helpImage.setImageResource(R.drawable.alert_icon);
+                areaText.setText("Location: " + accidentProneAreaJSON + ", " + mAddressOutput);
                 if (notificationPref)
                     buildNotification(true);
             } else {
                 helpImage.setImageResource(R.drawable.safe_icon);
+                areaText.setText("Location: " + mAddressOutput);
                 helpText.setText("You are in a Safe Area.");
                 helpText.setTextColor(Color.parseColor("#388E3C"));
                 if (notificationPref)
@@ -696,7 +700,6 @@ public class MainActivity extends AppCompatActivity
             } else
                 speedText.setTextColor(Color.parseColor("#388E3C"));
 
-            areaText.setText("Location: " + mAddressOutput);
             nearestPSTextView.setText("Nearest Police Station: " + nearestPS.getmName() + " " + (int) minresult[0] / 1000 + " " + "KMs");
             nearestPSTextView.setVisibility(View.VISIBLE);
             phoneImage.setVisibility(View.VISIBLE);
