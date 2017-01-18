@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -60,6 +61,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity
     private NotificationManager mNotificationManager;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
+    private TextToSpeech t1;
 
     private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
             = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
@@ -381,7 +384,14 @@ public class MainActivity extends AppCompatActivity
                 helpText.setTextColor(Color.BLACK);
             }
         }
-
+        t1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        });
     }
 
     @Override
@@ -394,6 +404,10 @@ public class MainActivity extends AppCompatActivity
             timer.cancel();
         }
         mNotificationManager.cancelAll();
+        if (t1 != null) {
+            t1.stop();
+            t1.shutdown();
+        }
         super.onDestroy();
     }
 
@@ -709,13 +723,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void playAlertSound() {
-        //Play alert sound
-        try {
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        t1.speak("Alert! Accident Prone Area.", TextToSpeech.QUEUE_FLUSH, null);
     }
 
     public void buildNotification(boolean is_alert) {
