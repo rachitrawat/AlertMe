@@ -726,7 +726,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void playAlertSound() {
-        t1.speak("Alert! Accident Prone Area.", TextToSpeech.QUEUE_FLUSH, null);
+        t1.speak("Alert! Accident Prone Area." + accidentProneAreaJSON, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     public void buildNotification(boolean is_alert) {
