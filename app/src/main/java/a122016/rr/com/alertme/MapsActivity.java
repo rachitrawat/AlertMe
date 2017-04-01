@@ -287,11 +287,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else if (intValue == 3) {
             Location mCurrentLocation = MainActivity.getCurrentLocation();
+            LatLng mDestinationLatLng = MainActivity.getDestinationLatLng();
             String mCurrentLocationString = MainActivity.getCurrentLocationString();
+            String mDestinationString = MainActivity.getDestinationString();
             LatLng latLong1 = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-            LatLng latLong2 = new LatLng(29.06848, 77.061348);
 
-            String url = getMapsApiDirectionsUrl(latLong1, latLong2);
+            String url = getMapsApiDirectionsUrl(latLong1, mDestinationLatLng);
             ReadTask downloadTask = new ReadTask();
             // Start downloading json data from Google Directions API
             downloadTask.execute(url);
@@ -303,9 +304,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
             mMap.addMarker(new MarkerOptions()
-                    .position(latLong2)
-                    .title("Accident Prone")
-                    .snippet("Test")
+                    .position(mDestinationLatLng)
+                    .title(mDestinationString)
+                    .snippet("Destination")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         }
 

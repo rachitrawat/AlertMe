@@ -13,6 +13,21 @@
     tools:context="a122016.rr.com.alertme.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <EditText
+        android:id="@+id/destinationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Destination (Optional)" />
+
+    <ImageView
+        android:id="@+id/destination_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:onClick="ok_destination"
+        android:layout_toRightOf="@id/destinationText"
+        android:src="@drawable/ic_done_black_24dp" />
+
     <TextView
         android:id="@+id/alert_text_view"
         android:layout_width="wrap_content"
@@ -87,7 +102,8 @@
         android:id="@+id/help_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/alert_text_view" />
+        android:layout_above="@id/alert_text_view"
+        android:layout_below="@id/destinationText" />
 
 
     <ProgressBar

@@ -12,6 +12,7 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.Ringtone;
@@ -43,9 +44,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,8 +63,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -112,9 +119,13 @@ public class MainActivity extends AppCompatActivity
      */
     protected static String mAddressOutput = "Fetching...";
 
+    private static String destinationTextString;
+
     private TextView progressBarText;
     private TextView nameTextView;
+    private EditText destinationText;
     private TextView phoneTextView;
+    private ImageView doneImageView;
     private ProgressBar progessBar;
     private String LOCATION_KEY = "Location_Key";
     private TextView helpText;
@@ -150,6 +161,8 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private TextToSpeech t1;
     private static String accidentProneAreaJSON;
+    private Geocoder geocoder;
+    private static LatLng destinationlatLng;
 
     private LoaderManager.LoaderCallbacks<ArrayList<Place>> placeLoaderListener
             = new LoaderManager.LoaderCallbacks<ArrayList<Place>>() {
@@ -230,6 +243,16 @@ public class MainActivity extends AppCompatActivity
         return mAddressOutput;
     }
 
+    public static LatLng getDestinationLatLng() {
+
+        return destinationlatLng;
+    }
+
+    public static String getDestinationString() {
+
+        return destinationTextString;
+    }
+
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
      * fetching an address.
@@ -270,12 +293,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG, "Create");
 
+        geocoder = new Geocoder(this, Locale.US);
         mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        doneImageView = (ImageView) findViewById(R.id.destination_button);
+        doneImageView.setVisibility(View.INVISIBLE);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab_map = (FloatingActionButton) findViewById(R.id.fab_map);
         fab.setVisibility(View.INVISIBLE);
@@ -313,6 +339,8 @@ public class MainActivity extends AppCompatActivity
         mResultReceiver = new AddressResultReceiver(new Handler());
         buildGoogleApiClient();
 
+        destinationText = (EditText) findViewById(R.id.destinationText);
+        destinationText.setVisibility(View.INVISIBLE);
         progessBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
         progessBar.setVisibility(View.INVISIBLE);
@@ -433,6 +461,8 @@ public class MainActivity extends AppCompatActivity
 
     private void startAlertEngine() {
         fab_map.setVisibility(View.VISIBLE);
+        doneImageView.setVisibility(View.VISIBLE);
+        destinationText.setVisibility(View.VISIBLE);
         engine_running = true;
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -441,7 +471,11 @@ public class MainActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        afterLoadFinished();
+                        try {
+                            afterLoadFinished();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
@@ -459,6 +493,8 @@ public class MainActivity extends AppCompatActivity
 
     private void stopAlertEngine() {
         fab_map.setVisibility(View.INVISIBLE);
+        destinationText.setVisibility(View.INVISIBLE);
+        doneImageView.setVisibility(View.INVISIBLE);
         engine_running = false;
         timer.cancel();
         mNotificationManager.cancel(1);
@@ -650,10 +686,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void afterLoadFinished() {
+    public void afterLoadFinished() throws IOException {
 
         if (mCurrentLocation != null && Geocoder.isPresent()) {
             startIntentService();
+        }
+
+        if (destinationTextString != null) {
+            List<Address> listOfAddress = geocoder.getFromLocationName(destinationTextString, 1);
+            double latitude = listOfAddress.get(0).getLatitude();
+            double longitude = listOfAddress.get(0).getLongitude();
+            destinationlatLng = new LatLng(latitude, longitude);
+            Log.e(LOG_TAG, latitude + " " + longitude);
         }
 
         int c = 0;
@@ -882,6 +926,19 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void ok_destination(View view) {
+        // Check if no view has focus:
+        // hide keyboard
+        View view1 = this.getCurrentFocus();
+        if (view1 != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view1.getWindowToken(), 0);
+        }
+        destinationTextString = destinationText.getText().toString();
+        Toast msg = Toast.makeText(getBaseContext(), "Destination: " + destinationTextString, Toast.LENGTH_LONG);
+        msg.show();
     }
 
     public void make_call(View view) {
