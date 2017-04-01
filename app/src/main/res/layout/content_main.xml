@@ -19,15 +19,37 @@
         android:layout_height="wrap_content"
         android:hint="Destination (Optional)" />
 
-    <ImageView
-        android:id="@+id/destination_button"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true">
+
+    <ImageView
+        android:id="@+id/destination_button_done"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="done_destination"
+        android:layout_weight="1"
         android:padding="8dp"
-        android:onClick="ok_destination"
-        android:layout_toRightOf="@id/destinationText"
         android:src="@drawable/ic_done_black_24dp" />
 
+    <ImageView
+        android:id="@+id/destination_button_clear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="clear_destination"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:src="@drawable/ic_clear_black_24dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar2"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+
+    </LinearLayout>
     <TextView
         android:id="@+id/alert_text_view"
         android:layout_width="wrap_content"
@@ -103,7 +125,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/alert_text_view"
-        android:layout_below="@id/destinationText" />
+        android:layout_below="@id/destinationText"
+        android:paddingTop="8dp" />
 
 
     <ProgressBar

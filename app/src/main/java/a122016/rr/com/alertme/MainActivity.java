@@ -119,14 +119,16 @@ public class MainActivity extends AppCompatActivity
      */
     protected static String mAddressOutput = "Fetching...";
 
-    private static String destinationTextString;
+    private static String destinationTextString = "";
 
     private TextView progressBarText;
     private TextView nameTextView;
     private EditText destinationText;
     private TextView phoneTextView;
     private ImageView doneImageView;
-    private ProgressBar progessBar;
+    private ImageView clearImageView;
+    private ProgressBar progressBar;
+    private ProgressBar progressBar2;
     private String LOCATION_KEY = "Location_Key";
     private TextView helpText;
     private TextView areaText;
@@ -181,14 +183,14 @@ public class MainActivity extends AppCompatActivity
                     helpText.setTextColor(Color.parseColor("#3949AB"));
                 }
                 helpText.setVisibility(View.VISIBLE);
-                progessBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
 
                 //allow opening navigation drawer
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 toggle.syncState();
             } else {
-                progessBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
                 helpImage.setImageResource(R.drawable.error_icon);
                 helpImage.setVisibility(View.VISIBLE);
@@ -300,8 +302,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        doneImageView = (ImageView) findViewById(R.id.destination_button);
+        doneImageView = (ImageView) findViewById(R.id.destination_button_done);
         doneImageView.setVisibility(View.INVISIBLE);
+        clearImageView = (ImageView) findViewById(R.id.destination_button_clear);
+        clearImageView.setVisibility(View.INVISIBLE);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab_map = (FloatingActionButton) findViewById(R.id.fab_map);
         fab.setVisibility(View.INVISIBLE);
@@ -341,9 +345,11 @@ public class MainActivity extends AppCompatActivity
 
         destinationText = (EditText) findViewById(R.id.destinationText);
         destinationText.setVisibility(View.INVISIBLE);
-        progessBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar2 = (ProgressBar) findViewById(R.id.progress_bar2);
         progressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        progessBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar2.setVisibility(View.INVISIBLE);
         progressBarText.setVisibility(View.INVISIBLE);
         helpText = (TextView) findViewById(R.id.alert_text_view);
         helpText.setVisibility(View.INVISIBLE);
@@ -419,11 +425,11 @@ public class MainActivity extends AppCompatActivity
 
                 loaderManager.initLoader(PLACES_LOADER_ID, null, placeLoaderListener);
                 loaderManager.initLoader(POLICE_STATION_LOADER_ID, null, policeStationLoaderListener);
-                progessBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 progressBarText.setVisibility(View.VISIBLE);
 
             } else {
-                progessBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 progressBarText.setVisibility(View.GONE);
                 helpImage.setImageResource(R.drawable.error_icon);
                 helpImage.setVisibility(View.VISIBLE);
@@ -460,8 +466,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startAlertEngine() {
-        fab_map.setVisibility(View.VISIBLE);
         doneImageView.setVisibility(View.VISIBLE);
+        clearImageView.setVisibility(View.VISIBLE);
         destinationText.setVisibility(View.VISIBLE);
         engine_running = true;
         timer = new Timer();
@@ -495,6 +501,7 @@ public class MainActivity extends AppCompatActivity
         fab_map.setVisibility(View.INVISIBLE);
         destinationText.setVisibility(View.INVISIBLE);
         doneImageView.setVisibility(View.INVISIBLE);
+        clearImageView.setVisibility(View.INVISIBLE);
         engine_running = false;
         timer.cancel();
         mNotificationManager.cancel(1);
@@ -670,7 +677,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     // permission denied
 
-                    progessBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
                     progressBarText.setVisibility(View.GONE);
                     helpImage.setImageResource(R.drawable.error_icon);
                     helpImage.setVisibility(View.VISIBLE);
@@ -693,12 +700,25 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (destinationTextString != null) {
-            List<Address> listOfAddress = geocoder.getFromLocationName(destinationTextString, 1);
-            double latitude = listOfAddress.get(0).getLatitude();
-            double longitude = listOfAddress.get(0).getLongitude();
-            destinationlatLng = new LatLng(latitude, longitude);
-            Log.e(LOG_TAG, latitude + " " + longitude);
+            if (!destinationTextString.equals("")) {
+                progressBar2.setVisibility(View.INVISIBLE);
+                fab_map.setVisibility(View.VISIBLE);
+                List<Address> listOfAddress = geocoder.getFromLocationName(destinationTextString, 1);
+                double latitude = listOfAddress.get(0).getLatitude();
+                double longitude = listOfAddress.get(0).getLongitude();
+                destinationlatLng = new LatLng(latitude, longitude);
+                Log.e(LOG_TAG, latitude + " " + longitude);
+            } else {
+                Log.e(LOG_TAG, "Empty");
+                fab_map.setVisibility(View.INVISIBLE);
+                progressBar2.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            Log.e(LOG_TAG, "Empty");
+            fab_map.setVisibility(View.INVISIBLE);
+            progressBar2.setVisibility(View.INVISIBLE);
         }
+
 
         int c = 0;
 
@@ -928,7 +948,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void ok_destination(View view) {
+    public void done_destination(View view) {
+        destinationTextString = "";
         // Check if no view has focus:
         // hide keyboard
         View view1 = this.getCurrentFocus();
@@ -939,6 +960,11 @@ public class MainActivity extends AppCompatActivity
         destinationTextString = destinationText.getText().toString();
         Toast msg = Toast.makeText(getBaseContext(), "Destination: " + destinationTextString, Toast.LENGTH_LONG);
         msg.show();
+        progressBar2.setVisibility(View.VISIBLE);
+    }
+
+    public void clear_destination(View view) {
+        destinationText.setText("");
     }
 
     public void make_call(View view) {

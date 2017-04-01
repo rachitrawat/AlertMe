@@ -237,7 +237,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
-
                     points.add(position);
                 }
 
@@ -263,12 +262,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        ArrayList<Place> arrayList = MainActivity.getArrayList();
 
         Intent mIntent = getIntent();
         int intValue = mIntent.getIntExtra("intVariableName", 0);
 
         if (intValue == 1) {
-            ArrayList<Place> arrayList = MainActivity.getArrayList();
 
             for (Place place : arrayList) {
                 if (place.getLatitude() != 0) {
@@ -277,9 +276,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         } else if (intValue == 2) {
-            ArrayList<PoliceStation> arrayList = MainActivity.getArrayListPS();
+            ArrayList<PoliceStation> arrayListp = MainActivity.getArrayListPS();
 
-            for (PoliceStation place : arrayList) {
+            for (PoliceStation place : arrayListp) {
                 if (place.getmLatitude() != 0) {
                     LatLng latLong = new LatLng(place.getmLatitude(), place.getmLongitude());
                     mMap.addMarker(new MarkerOptions().position(latLong).title(place.getmName()));
@@ -307,7 +306,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .position(mDestinationLatLng)
                     .title(mDestinationString)
                     .snippet("Destination")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+            for (Place place : arrayList) {
+                if (place.getLatitude() != 0) {
+                    if ((((Math.abs(place.getLatitude() - mCurrentLocation.getLatitude())) < 0.1) && ((Math.abs(place.getLongitude() - mCurrentLocation.getLongitude()) < 0.1))) || (((Math.abs(place.getLatitude() - mDestinationLatLng.latitude)) < 0.1) && ((Math.abs(place.getLongitude() - mDestinationLatLng.longitude) < 0.1)))) {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(place.getLatitude(), place.getLongitude()))
+                                .title(place.getPlaceOfAccident())
+                                .snippet("Accident Prone Area")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    }
+                }
+            }
         }
 
 
