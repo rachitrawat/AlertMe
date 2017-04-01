@@ -1,6 +1,7 @@
 package a122016.rr.com.alertme;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
@@ -8,6 +9,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -55,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.addMarker(new MarkerOptions().position(latLong).title(place.getPlaceOfAccident()));
                 }
             }
-        } else {
+        } else if (intValue == 2) {
             ArrayList<PoliceStation> arrayList = MainActivity.getArrayListPS();
 
             for (PoliceStation place : arrayList) {
@@ -64,6 +66,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.addMarker(new MarkerOptions().position(latLong).title(place.getmName()));
                 }
             }
+        } else if (intValue == 3) {
+            Location mCurrentLocation = MainActivity.getCurrentLocation();
+            String mCurrentLocationString = MainActivity.getCurrentLocationString();
+            LatLng latLong = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(latLong)
+                    .title(mCurrentLocationString)
+                    .snippet("Current Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
         }
 
         // Set the camera to the greatest possible zoom level that includes the

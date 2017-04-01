@@ -106,11 +106,11 @@ public class MainActivity extends AppCompatActivity
     /**
      * Represents a geographical location.
      */
-    protected Location mCurrentLocation;
+    protected static Location mCurrentLocation;
     /**
      * The formatted location address.
      */
-    protected String mAddressOutput = "Fetching...";
+    protected static String mAddressOutput = "Fetching...";
 
     private TextView progressBarText;
     private TextView nameTextView;
@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity
     private Vibrator v;
     private NotificationCompat.Builder mBuilder;
     private FloatingActionButton fab;
+    private FloatingActionButton fab_map;
 
     /**
      * Receiver registered with this activity to get the response from FetchAddressIntentService.
@@ -219,6 +220,16 @@ public class MainActivity extends AppCompatActivity
         return arrayListPS;
     }
 
+    public static Location getCurrentLocation() {
+
+        return mCurrentLocation;
+    }
+
+    public static String getCurrentLocationString() {
+
+        return mAddressOutput;
+    }
+
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
      * fetching an address.
@@ -266,13 +277,21 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab_map = (FloatingActionButton) findViewById(R.id.fab_map);
         fab.setVisibility(View.INVISIBLE);
+        fab_map.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Alert Engine Started", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 startAlertEngine();
+            }
+        });
+        fab_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                execute_it_live();
             }
         });
 
@@ -413,6 +432,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startAlertEngine() {
+        fab_map.setVisibility(View.VISIBLE);
         engine_running = true;
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -438,6 +458,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void stopAlertEngine() {
+        fab_map.setVisibility(View.INVISIBLE);
         engine_running = false;
         timer.cancel();
         mNotificationManager.cancel(1);
@@ -459,6 +480,12 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    private void execute_it_live() {
+        Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("intVariableName", 3);
+        startActivity(i);
     }
 
     private void execute_it() {
