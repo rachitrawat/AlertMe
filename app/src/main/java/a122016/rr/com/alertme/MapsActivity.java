@@ -222,6 +222,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
+            ArrayList<Place> arrayList = MainActivity.getArrayList();
+            //Create an int array
+            int[] arr = new int[arrayList.size()];
             ArrayList<LatLng> points = null;
             PolylineOptions polyLineOptions = null;
 
@@ -238,8 +241,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
                     points.add(position);
-                }
 
+                    //mark accident area 1 if it lies on the route
+                    for (int k = 0; k < arrayList.size(); k++) {
+                        if ((Math.abs(arrayList.get(k).getLatitude() - lat)) < 0.01 && (Math.abs(arrayList.get(k).getLongitude() - lng)) < 0.01 && arrayList.get(k).getLatitude() != 0) {
+                            arr[k] = 1;
+                        }
+                    }
+                }
+                //put accident area markers on route
+                for (int x = 0; x < arrayList.size(); x++) {
+                    if (arr[x] == 1) {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(arrayList.get(x).getLatitude(), arrayList.get(x).getLongitude()))
+                                .title(arrayList.get(x).getPlaceOfAccident())
+                                .snippet("Accident Prone Area")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    }
+
+
+                }
                 polyLineOptions.addAll(points);
                 polyLineOptions.width(10);
                 polyLineOptions.color(Color.BLUE);
@@ -307,18 +328,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(mDestinationString)
                     .snippet("Destination")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-
-            for (Place place : arrayList) {
-                if (place.getLatitude() != 0) {
-                    if ((((Math.abs(place.getLatitude() - mCurrentLocation.getLatitude())) < 0.1) && ((Math.abs(place.getLongitude() - mCurrentLocation.getLongitude()) < 0.1))) || (((Math.abs(place.getLatitude() - mDestinationLatLng.latitude)) < 0.1) && ((Math.abs(place.getLongitude() - mDestinationLatLng.longitude) < 0.1)))) {
-                        mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(place.getLatitude(), place.getLongitude()))
-                                .title(place.getPlaceOfAccident())
-                                .snippet("Accident Prone Area")
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                    }
-                }
-            }
         }
 
 
