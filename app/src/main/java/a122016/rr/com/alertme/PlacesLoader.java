@@ -15,12 +15,8 @@
  */
 package a122016.rr.com.alertme;
 
-import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
-
-import com.google.android.gms.location.places.Places;
 
 import java.util.ArrayList;
 

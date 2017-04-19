@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity
                 });
             }
         }, 0, 12000);
-        fab.setImageResource(R.drawable.ic_media_pause);
+        fab.setImageResource(R.drawable.ic_pause_white_24dp);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity
         engine_running = false;
         timer.cancel();
         mNotificationManager.cancel(1);
-        fab.setImageResource(R.drawable.ic_media_play);
+        fab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         helpText.setText("Press play button to start.");
         helpText.setTextColor(Color.parseColor("#3949AB"));
         helpImage.setVisibility(View.INVISIBLE);

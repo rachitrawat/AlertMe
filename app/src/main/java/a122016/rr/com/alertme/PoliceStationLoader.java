@@ -15,7 +15,6 @@
  */
 package a122016.rr.com.alertme;
 
-import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
